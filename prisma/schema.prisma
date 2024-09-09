@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+}
+
+model Challenge {
+  id        Int                 @id @default(autoincrement())
+  type      String
+  challenge SentenceChallenge[]
+}
+
+model SentenceChallenge {
+  id          Int       @id @default(autoincrement())
+  sentence    String
+  challengeId Int
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  correct     String
+}
