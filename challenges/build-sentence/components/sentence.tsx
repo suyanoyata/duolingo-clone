@@ -22,7 +22,10 @@ export const Sentence = (props: {
   };
 
   return (
-    <div className="h-[150px] flex gap-2 flex-wrap content-start z-50">
+    <div className="h-[200px] flex gap-[10px] flex-wrap content-start z-50 relative">
+      <div className="absolute top-[44px] left-0 w-full bg-slate-200 h-[2px]"></div>
+      <div className="absolute top-[94px] left-0 w-full bg-slate-200 h-[2px]"></div>
+      <div className="absolute top-[144px] left-0 w-full bg-slate-200 h-[2px]"></div>
       {sentence.map((word) => (
         <Button
           key={word.id}

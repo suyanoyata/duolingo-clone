@@ -10,18 +10,23 @@ const getRandomSentence = async () => {
       challenge: {
         select: {
           sentence: true,
+          translate: true,
+          correct: true,
         },
       },
     },
   });
-  console.log(`got ${challenges.length} sentence challenges`);
   const length = challenges.length;
 
   let id = 0;
 
   id = Math.floor(Math.random() * length);
 
-  return challenges[id].challenge[0].sentence;
+  return {
+    sentence: challenges[id].challenge[0].sentence,
+    correct: challenges[id].challenge[0].correct,
+    translate: challenges[id].challenge[0].translate,
+  };
 };
 
 export { getRandomSentence };
