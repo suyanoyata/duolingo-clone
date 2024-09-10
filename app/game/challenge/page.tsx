@@ -24,8 +24,8 @@ export default function Page() {
   const [dirty, setDirty] = useState<boolean>(false);
 
   const { data } = useQuery({
-    queryKey: ["random_sentence"],
-    queryFn: async () => await getRandomSentence(),
+    queryKey: ["random_sentence", "en"],
+    queryFn: async () => await getRandomSentence("en"),
     refetchOnWindowFocus: false,
   });
 
@@ -43,7 +43,7 @@ export default function Page() {
   useEffect(() => {
     if (data != null || data != undefined) {
       setWords(
-        data.sentence.map((word, index) => ({
+        data.sentence!.map((word, index) => ({
           text: word,
           isAvailable: true,
           id: index,

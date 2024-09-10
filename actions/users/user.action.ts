@@ -1,15 +1,29 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { CreateUser } from "@/types/User";
+import { CreateUser, UserWithoutId } from "@/types/User";
 import { generateSession } from "@/lib/session-helper";
+import { hashPassword } from "@/lib/hash-password";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 const createUser = async (user: CreateUser) => {
-  return await prisma.user.create({
-    data: user,
+  const createUser = UserWithoutId.parse(user);
+  console.log("[+] parsed user");
+
+  const create = await prisma.user.create({
+    data: {
+      name: createUser.name,
+      email: createUser.email,
+      password: await hashPassword(createUser.password),
+      hearts: 5,
+    },
   });
+
+  console.log("Created new user", create);
+
+  return create;
 };
 
 const getUsers = async () => {

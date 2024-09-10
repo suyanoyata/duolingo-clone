@@ -11,7 +11,7 @@ export default function Home() {
         application.
       </p>
       <Button asChild size="sm" variant="primary">
-        <Link href="/app">Lets do this</Link>
+        <Link href="/game/challenge">Lets do this</Link>
       </Button>
     </div>
   );

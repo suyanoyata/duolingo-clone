@@ -3,62 +3,61 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-let challenge = "";
-let bait = "";
-let translate = "";
-
-function getChallengeText() {
+function getFlag(flag: string, error: string): string {
+  let value = "";
   process.argv.forEach(function (val, index) {
-    if (val == "-m") {
+    if (val == flag) {
       if (process.argv[index + 1] == undefined) {
-        throw "Challenge text is required (-m)";
+        throw error;
       }
-      challenge = process.argv[index + 1];
+      value = process.argv[index + 1];
     }
   });
-}
 
-function getBaitWords() {
-  process.argv.forEach(function (val, index) {
-    if (val == "-b") {
-      if (process.argv[index + 1] == undefined) {
-        throw "At least 1 bait word required (-b)";
-      }
-      bait = process.argv[index + 1];
-    }
-  });
-}
-
-function getTranslate() {
-  process.argv.forEach(function (val, index) {
-    if (val == "-t") {
-      if (process.argv[index + 1] == undefined) {
-        throw "Translate is required (-t)";
-      }
-      translate = process.argv[index + 1];
-    }
-  });
-}
-
-async function main() {
-  getChallengeText();
-  getBaitWords();
-  getTranslate();
-
-  if (challenge + bait + translate == "") {
-    throw "Fill all required flags (-m challenge) (-b bait words) (-t translate)";
+  if (value == "") {
+    throw error;
   }
 
+  return value;
+}
+
+const language = getFlag("-l", "Language is required (-l)");
+const challenge = getFlag("-m", "Challenge text is required (-m)");
+const bait = getFlag("-b", "Bait words are required (-b)");
+const translate = getFlag("-t", "Translation is required (-t)");
+
+async function main() {
   const newChallenge = shuffle([...challenge.split(" "), ...bait.split(" ")]);
 
-  await prisma.challenge.create({
+  const languageCode = await prisma.language.findUnique({
+    where: {
+      code: language,
+    },
+  });
+
+  if (!languageCode) {
+    await prisma.language.create({
+      data: {
+        code: language,
+        name: language,
+      },
+    });
+  }
+
+  await prisma.lesson.create({
     data: {
-      type: "sentence",
-      challenge: {
+      name: "Basics",
+      languageCode: language,
+      challenges: {
         create: {
-          translate,
-          sentence: newChallenge,
-          correct: challenge,
+          type: "sentence",
+          sentenceChallenge: {
+            create: {
+              translate,
+              sentence: newChallenge,
+              correct: challenge,
+            },
+          },
         },
       },
     },

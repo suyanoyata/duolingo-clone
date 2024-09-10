@@ -4,26 +4,67 @@ generator client {
 
 datasource db {
   directUrl = env("DIRECT_URL")
-  provider  = "postgresql"
   url       = env("DATABASE_URL")
+  provider  = "postgresql"
+}
+
+model Language {
+  id     Int      @id @default(autoincrement())
+  code   String   @unique
+  name   String
+  Lesson Lesson[]
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  name     String
+  password String
+  hearts   Int
+}
+
+model Lesson {
+  id           Int         @id @default(autoincrement())
+  name         String
+  challenges   Challenge[]
+  language     Language    @relation(fields: [languageCode], references: [code])
+  languageCode String
 }
 
 model Challenge {
-  id        Int                 @id @default(autoincrement())
-  type      String
-  challenge SentenceChallenge[]
+  id                    Int                  @id @default(autoincrement())
+  type                  String
+  lesson                Lesson?              @relation(fields: [lessonId], references: [id])
+  lessonId              Int?
+  sentenceChallenge     SentenceChallenge?   @relation(fields: [sentenceChallengeId], references: [id])
+  selectWordChallenge   SelectWordChallenge? @relation(fields: [selectWordChallengeId], references: [id])
+  sentenceChallengeId   Int?
+  selectWordChallengeId Int?
+  SelectWordInstance    SelectWordInstance[]
 }
 
 model SentenceChallenge {
-  id          Int       @id @default(autoincrement())
-  sentence    String[]
-  challengeId Int
-  translate   String
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
-  correct     String
+  id        Int         @id @default(autoincrement())
+  sentence  String[]
+  translate String
+  correct   String
+  Challenge Challenge[]
+}
+
+model SelectWordChallenge {
+  id        Int                  @id @default(autoincrement())
+  translate String
+  correct   String
+  challenge Challenge[]
+  variants  SelectWordInstance[]
+}
+
+model SelectWordInstance {
+  id                    Int                  @id @default(autoincrement())
+  name                  String
+  image                 String?
+  challenge             Challenge            @relation(fields: [challengeId], references: [id])
+  selectWordChallenge   SelectWordChallenge? @relation(fields: [selectWordChallengeId], references: [id])
+  selectWordChallengeId Int?
+  challengeId           Int
 }

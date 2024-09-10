@@ -19,6 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(`antialiased min-w-[320px]`, nunito.className)}>
+        {/* <nav className="absolute bottom-0 left-0 w-full h-7 bg-red-400 text-white font-bold text-sm flex items-center justify-center">
+          prisma file has unconfirmed database changes, push them with npx
+          prisma db push
+        </nav> */}
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
