@@ -26,6 +26,7 @@ export default function Page() {
   const { data } = useQuery({
     queryKey: ["random_sentence"],
     queryFn: async () => await getRandomSentence(),
+    refetchOnWindowFocus: false,
   });
 
   const checkSubmit = () => {
