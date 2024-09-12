@@ -10,5 +10,6 @@ export const User = z.object({
 });
 
 export const UserWithoutId = User.omit({ id: true, hearts: true });
-
+export const ClientUser = User.omit({ password: true });
 export type CreateUser = z.infer<typeof UserWithoutId>;
+export type User = z.infer<typeof ClientUser>;

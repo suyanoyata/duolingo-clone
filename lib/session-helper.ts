@@ -3,7 +3,7 @@ import { sign, verify } from "jsonwebtoken";
 import { User } from "@prisma/client";
 
 const generateSession = (data: User) => {
-  const token = sign({ email: data.email }, process.env.JWT_SECRET as string);
+  const token = sign({ id: data.id }, process.env.JWT_SECRET as string);
 
   const cookie = cookies();
   const expire_date = Date.now() + 7 * 24 * 60 * 60 * 1000;
@@ -15,7 +15,9 @@ const generateSession = (data: User) => {
   return token;
 };
 
-const verifySession = async (): Promise<User> => {
+const verifySession = async (): Promise<{
+  data: User;
+}> => {
   try {
     const cookie = cookies().get("access-token");
     if (!cookie?.value) {

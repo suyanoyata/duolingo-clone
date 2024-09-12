@@ -21,3 +21,6 @@ export function shuffle<T>(array: Array<T>) {
 
   return arr;
 }
+
+export const isDev = process.env.NODE_ENV === "development";
+export const db_sync = true;

@@ -1,7 +1,8 @@
 import { Button as ShadButton } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { SentenceFramerAnimationConfig } from "@/types/framer/sentence-animation-config";
 import { SentenceWord } from "@/types/Game";
-import { motion } from "framer-motion";
+import { motion, Reorder } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 
 export const Sentence = (props: {
@@ -22,27 +23,45 @@ export const Sentence = (props: {
   };
 
   return (
-    <div className="h-[200px] flex gap-[10px] flex-wrap content-start z-50 relative">
+    <div className="h-[200px] relative z-20">
       <div className="absolute top-[44px] left-0 w-full bg-slate-200 h-[2px]"></div>
       <div className="absolute top-[94px] left-0 w-full bg-slate-200 h-[2px]"></div>
       <div className="absolute top-[144px] left-0 w-full bg-slate-200 h-[2px]"></div>
-      {sentence.map((word) => (
-        <Button
-          key={word.id}
-          onClick={() => {
-            removeFromSentence(word);
-          }}
-          animate={{
-            zIndex: 50,
-          }}
-          variant="game"
-          className="z-40"
-          transition={animationConfig}
-          layoutId={word.id.toString()}
-        >
-          {word.text}
-        </Button>
-      ))}
+      <Reorder.Group
+        onReorder={setSentence}
+        values={sentence}
+        axis="x"
+        /*
+          bug: using flex-wrap cause items to reoder in unexpected ways,
+          while removing flex-wrap fixes the issue, its not a solution as we need to wrap
+          items when we exceed screen width
+        */
+        className={cn(
+          "flex gap-[10px] content-start",
+          "h-[200px]",
+          // "flex-wrap",
+        )}
+      >
+        {sentence.map((word) => (
+          <Reorder.Item value={word} key={word.id} drag>
+            <Button
+              onClick={() => {
+                removeFromSentence(word);
+              }}
+              // this is probably useless
+              // animate={{
+              //   zIndex: 50,
+              // }}
+              variant="game"
+              className="z-30"
+              transition={animationConfig}
+              layoutId={word.id.toString()}
+            >
+              {word.text}
+            </Button>
+          </Reorder.Item>
+        ))}
+      </Reorder.Group>
     </div>
   );
 };

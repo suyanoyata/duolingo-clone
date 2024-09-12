@@ -2,9 +2,8 @@
 
 import { PrismaClient } from "@prisma/client";
 import { CreateUser, UserWithoutId } from "@/types/User";
-import { generateSession } from "@/lib/session-helper";
+import { generateSession, verifySession } from "@/lib/session-helper";
 import { hashPassword } from "@/lib/hash-password";
-import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -36,4 +35,16 @@ const getUsers = async () => {
   return users;
 };
 
-export { createUser, getUsers };
+const getSession = async () => {
+  const session = await verifySession();
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: session.data.id,
+    },
+  });
+
+  return user;
+};
+
+export { createUser, getUsers, getSession };

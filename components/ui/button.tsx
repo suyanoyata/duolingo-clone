@@ -18,6 +18,7 @@ const buttonVariants = cva(
         destructive:
           "bg-red-400 text-primary-foreground hover:bg-red-400/90 border-red-500 border-b-4 active:border-b-0",
         game: "bg-white text-slate-500 border-slate-200 hover:bg-slate-100 border-2 border-b-[4px] active:border-b-[2px] normal-case text-base",
+        ghost: "bg-transparent text-slate-500 hover:bg-slate-100 duration-200",
       },
       size: {
         default: "h-10 px-4 py-2",

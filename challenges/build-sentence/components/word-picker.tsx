@@ -3,7 +3,7 @@ import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { SentenceFramerAnimationConfig } from "@/types/framer/sentence-animation-config";
 import { SentenceWord } from "@/types/Game";
 import { motion } from "framer-motion";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 export const WordPicker = (props: {
   words: SentenceWord[];
@@ -15,10 +15,6 @@ export const WordPicker = (props: {
   const Button = motion.create(ShadButton);
 
   const { setWord } = useTextToSpeech(words);
-
-  useEffect(() => {
-    console.log(words);
-  }, [words]);
 
   const addWordToSentence = (word: SentenceWord) => {
     const newWords = [...words];
@@ -37,7 +33,7 @@ export const WordPicker = (props: {
               suppressHydrationWarning={true}
               variant="game"
               transition={animationConfig}
-              className="z-40 absolute top-0 left-0"
+              className="z-20 absolute top-0 left-0"
               layoutId={word.id.toString()}
               onClick={() => addWordToSentence(word)}
             >
