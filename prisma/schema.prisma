@@ -1,5 +1,3 @@
-// fix database relations (on save it will create faulty relations)
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,51 +20,65 @@ model Language {
   id     Int      @id @default(autoincrement())
   code   String   @unique
   name   String
-  Lesson Lesson[]
+  lesson Lesson[]
+  word   Word[]
 }
 
 model Lesson {
   id           Int         @id @default(autoincrement())
   name         String
+  order        Int
   language     Language    @relation(fields: [languageCode], references: [code])
   languageCode String
-  challenges   Challenge[]
+  challenge    Challenge[]
 }
 
 model Challenge {
-  id         Int       @id @default(autoincrement())
-  name       String
-  order      Int
-  lesson     Lesson    @relation(fields: [lessonId], references: [id])
-  sentence   Sentence? @relation(fields: [sentenceId], references: [id])
-  select     Select?   @relation(fields: [selectId], references: [id])
-  lessonId   Int
-  sentenceId Int?
-  selectId   Int?
-}
-
-model Sentence {
-  id                  Int         @id @default(autoincrement())
-  sentenceText        Word[]
-  wordId              Int
-  correctSentenceText Word[]
-  translate           String
-  challenge           Challenge[]
-}
-
-model Select {
-  id            Int         @id @default(autoincrement())
-  wordsSelect   Word[]
-  correctSelect Word        @relation(fields: [wordId], references: [id])
-  challenge     Challenge[]
-  wordId        Int
+  id            Int            @id @default(autoincrement())
+  name          String
+  order         Int
+  type          ChallengeType
+  lessonId      Int
+  lesson        Lesson         @relation(fields: [lessonId], references: [id])
+  selectOptions SelectOption[]
+  sentenceWords SentenceWord[]
 }
 
 model Word {
-  id         Int       @id @default(autoincrement())
-  text       String    @unique
-  meaning    String?
-  select     Select[]
-  sentence   Sentence? @relation(fields: [sentenceId], references: [id])
-  sentenceId Int?
+  id           Int            @id @default(autoincrement())
+  text         String
+  language     Language       @relation(fields: [languageCode], references: [code])
+  languageCode String
+  translations Translation[]
+  sentenceWord SentenceWord[]
+}
+
+model Translation {
+  id                 Int    @id @default(autoincrement())
+  wordId             Int
+  word               Word   @relation(fields: [wordId], references: [id])
+  translatedText     String
+  translatedLanguage String
+}
+
+model SentenceWord {
+  id          Int       @id @default(autoincrement())
+  challengeId Int
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  wordId      Int
+  word        Word      @relation(fields: [wordId], references: [id])
+  order       Int
+}
+
+model SelectOption {
+  id          Int       @id @default(autoincrement())
+  text        String
+  isCorrect   Boolean
+  challengeId Int
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+}
+
+enum ChallengeType {
+  select
+  sentence
 }

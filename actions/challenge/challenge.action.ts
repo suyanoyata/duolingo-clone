@@ -3,10 +3,10 @@
 import { verifySession } from "@/lib/session-helper";
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const db = new PrismaClient();
 
 const getRandomSentence = async (code: string) => {
-  const language = await prisma.language.findUnique({
+  const language = await db.language.findUnique({
     where: {
       code,
     },
@@ -18,19 +18,14 @@ const getRandomSentence = async (code: string) => {
     };
   }
 
-  const challenges = await prisma.challenge.findMany({
-    select: {
-      sentenceChallenge: {
-        select: {
-          sentence: true,
-          translate: true,
-          correct: true,
+  const challenges = await db.challenge.findMany({
+    select: {},
+    where: {
+      lesson: {
+        language: {
+          code: language.code,
         },
       },
-    },
-    where: {
-      type: "sentence",
-      lessonId: 2,
     },
   });
 
@@ -40,11 +35,7 @@ const getRandomSentence = async (code: string) => {
 
   id = Math.floor(Math.random() * length);
 
-  return {
-    sentence: challenges[id].sentenceChallenge!.sentence,
-    translate: challenges[id].sentenceChallenge!.translate,
-    correct: challenges[id].sentenceChallenge!.correct,
-  };
+  return challenges[id];
 };
 
 const HEART_LIMIT = 5;
@@ -58,7 +49,7 @@ const reduceHeart = async () => {
     };
   }
 
-  const user = await prisma.user.findUniqueOrThrow({
+  const user = await db.user.findUniqueOrThrow({
     where: {
       id: session.data.id,
     },
@@ -70,7 +61,7 @@ const reduceHeart = async () => {
     };
   }
 
-  const updatedUser = await prisma.user.update({
+  const updatedUser = await db.user.update({
     where: {
       id: session.data.id,
     },
@@ -91,7 +82,7 @@ const addHeart = async () => {
     };
   }
 
-  const user = await prisma.user.findUniqueOrThrow({
+  const user = await db.user.findUniqueOrThrow({
     where: {
       id: session.data.id,
     },
@@ -101,7 +92,7 @@ const addHeart = async () => {
     return null;
   }
 
-  const updatedUser = await prisma.user.update({
+  const updatedUser = await db.user.update({
     where: {
       id: session.data.id,
     },

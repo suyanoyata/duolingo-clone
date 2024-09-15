@@ -28,9 +28,11 @@ const createUser = async (user: CreateUser) => {
 const getUsers = async () => {
   const users = await prisma.user.findMany({});
 
-  generateSession(users![0]);
+  if (users.length == 0) {
+    return [];
+  }
 
-  console.log(`user.action.ts: wrote session from ${users[0].email}`);
+  generateSession(users![0]);
 
   return users;
 };

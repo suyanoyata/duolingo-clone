@@ -1,4 +1,4 @@
-import { shuffle } from "@/lib/utils";
+// import { shuffle } from "@/lib/utils";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -22,12 +22,12 @@ function getFlag(flag: string, error: string): string {
 }
 
 const language = getFlag("-l", "Language is required (-l)");
-const challenge = getFlag("-m", "Challenge text is required (-m)");
-const bait = getFlag("-b", "Bait words are required (-b)");
-const translate = getFlag("-t", "Translation is required (-t)");
+// const challenge = getFlag("-m", "Challenge text is required (-m)");
+// const bait = getFlag("-b", "Bait words are required (-b)");
+// const translate = getFlag("-t", "Translation is required (-t)");
 
 async function main() {
-  const newChallenge = shuffle([...challenge.split(" "), ...bait.split(" ")]);
+  // const newChallenge = shuffle([...challenge.split(" "), ...bait.split(" ")]);
 
   const languageCode = await prisma.language.findUnique({
     where: {
@@ -44,37 +44,32 @@ async function main() {
     });
   }
 
-  await prisma.lesson.create({
-    data: {
-      name: "Basics",
-      languageCode: language,
-      challenges: {
-        create: {
-          type: "sentence",
-          sentenceChallenge: {
-            create: {
-              translate,
-              sentence: newChallenge,
-              correct: challenge,
-            },
-          },
-        },
-      },
-    },
-  });
+  throw new Error("Fix script");
+
+  // const lesson = await prisma.lesson.create({
+  //   data: {
+  //     name: "Basics",
+  //     languageCode: language,
+  //     challenges: {
+  //       create: {
+  //         sentence: {
+  //           create: {
+  //             Word: {
+  //               create: newChallenge.map((word) => ({
+  //                 text: word,
+  //               })),
+  //             },
+  //             translate,
+  //             text: newChallenge,
+  //             answer: challenge,
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
 
   console.log("Done!");
-  console.log(
-    `Added new challenge with this fields: ${
-      (JSON.stringify({
-        translate,
-        newChallenge,
-        challenge,
-      }),
-      null,
-      2)
-    }`,
-  );
 
   prisma.$disconnect();
 }

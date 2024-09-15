@@ -8,19 +8,19 @@ import { LoadingOverlay } from "@/components/loading-overlay";
 import { MotionConfig } from "framer-motion";
 
 const ClientProviders = ({ children }: { children: React.ReactNode }) => {
-  const [queryClient] = useState(() => new QueryClient());
-  const { setUser, isPending, setIsPending } = clientStore();
+  const [queryClient] = useState<QueryClient>(() => new QueryClient());
+  // const { setUser, isPending, setIsPending } = clientStore();
 
-  useEffect(() => {
-    getSession()
-      .then((user) => {
-        setUser(user);
-        setIsPending(false);
-      })
-      .catch(() => {
-        setIsPending(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   getSession()
+  //     .then((user) => {
+  //       setUser(user);
+  //       setIsPending(false);
+  //     })
+  //     .catch(() => {
+  //       setIsPending(false);
+  //     });
+  // }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

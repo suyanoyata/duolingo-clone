@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { SentenceFramerAnimationConfig } from "@/types/framer/sentence-animation-config";
 import { SentenceWord } from "@/types/Game";
 import { motion, Reorder } from "framer-motion";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 
 export const Sentence = (props: {
   words: SentenceWord[];
@@ -15,6 +15,8 @@ export const Sentence = (props: {
   const Button = motion.create(ShadButton);
   const { sentence, setSentence, words, setWords, animationConfig } = props;
 
+  const limits = useRef(null);
+
   const removeFromSentence = (word: SentenceWord) => {
     const newWords = [...words];
     newWords[word.id].isAvailable = true;
@@ -23,7 +25,7 @@ export const Sentence = (props: {
   };
 
   return (
-    <div className="h-[200px] relative z-20">
+    <div className="h-[200px] relative z-20" ref={limits}>
       <div className="absolute top-[44px] left-0 w-full bg-slate-200 h-[2px]"></div>
       <div className="absolute top-[94px] left-0 w-full bg-slate-200 h-[2px]"></div>
       <div className="absolute top-[144px] left-0 w-full bg-slate-200 h-[2px]"></div>
@@ -31,6 +33,7 @@ export const Sentence = (props: {
         onReorder={setSentence}
         values={sentence}
         axis="x"
+        drag
         /*
           bug: using flex-wrap cause items to reoder in unexpected ways,
           while removing flex-wrap fixes the issue, its not a solution as we need to wrap
@@ -43,15 +46,11 @@ export const Sentence = (props: {
         )}
       >
         {sentence.map((word) => (
-          <Reorder.Item value={word} key={word.id} drag>
+          <Reorder.Item value={word} key={word.id}>
             <Button
               onClick={() => {
                 removeFromSentence(word);
               }}
-              // this is probably useless
-              // animate={{
-              //   zIndex: 50,
-              // }}
               variant="game"
               className="z-30"
               transition={animationConfig}

@@ -1,6 +1,7 @@
 "use client";
 
 import { getUsers } from "@/actions/users/user.action";
+import { LoadingOverlay } from "@/components/loading-overlay";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 
@@ -21,9 +22,9 @@ export default function Page() {
 
   if (isLoading) {
     return (
-      <p className="text-sm font-medium h-screen w-full flex justify-center items-center">
-        Loading...
-      </p>
+      <div className="relative w-full h-screen">
+        <LoadingOverlay />
+      </div>
     );
   }
 
@@ -45,7 +46,11 @@ export default function Page() {
   }
 
   if (users!.length == 0) {
-    return <p className="text-sm font-medium">No users in database</p>;
+    return (
+      <div className="flex items-center justify-center h-screen w-full">
+        <p className="text-sm font-medium">No users in database</p>
+      </div>
+    );
   }
 
   return (
