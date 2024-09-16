@@ -5,7 +5,7 @@ import { LoadingOverlay } from "@/components/loading-overlay";
 import { localDate } from "@/lib/date";
 import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import { notFound, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Page({ params }: { params: { slug: string } }) {

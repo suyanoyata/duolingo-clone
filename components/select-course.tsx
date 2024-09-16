@@ -18,7 +18,7 @@ export const SelectCourse = () => {
   return (
     <div>
       {data.map((language) => (
-        <CourseComponent language={language} />
+        <CourseComponent key={language.id} language={language} />
       ))}
     </div>
   );
