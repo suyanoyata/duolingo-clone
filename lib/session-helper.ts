@@ -1,3 +1,5 @@
+"use server";
+
 import { cookies } from "next/headers";
 import { sign, verify } from "jsonwebtoken";
 import { User } from "@prisma/client";
@@ -36,4 +38,8 @@ const verifySession = async (): Promise<{
   }
 };
 
-export { verifySession, generateSession };
+const clearSession = () => {
+  return cookies().delete("access-token");
+};
+
+export { verifySession, generateSession, clearSession };

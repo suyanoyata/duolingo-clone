@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <main className="flex">
       <Sidebar />
-      {children}
+      <main className="ml-[240px] flex-1">{children}</main>
     </main>
   );
 }

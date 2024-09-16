@@ -20,8 +20,8 @@ export const SidebarLink = ({
       asChild
       variant="ghost"
       className={cn(
-        "justify-start",
-        isFocused && "bg-sky-50 outline outline-2 outline-sky-200 text-sky-400",
+        "justify-start text-base",
+        isFocused && "bg-sky-50 outline outline-2 outline-sky-200 text-sky-500",
       )}
     >
       <Link href={href}>{children}</Link>

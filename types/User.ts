@@ -1,15 +1,34 @@
 import { z } from "zod";
 
-export const User = z.object({
-  id: z.number(),
-  hearts: z.number().max(5),
-
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
+export const UserLoginSchema = z.object({
+  email: z.string().email({
+    message: "Введіть коректну електронну адресу",
+  }),
+  password: z.string().min(6, {
+    message: "Ваш пароль занадто короткий",
+  }),
 });
 
-export const UserWithoutId = User.omit({ id: true, hearts: true });
-export const ClientUser = User.omit({ password: true });
-export type CreateUser = z.infer<typeof UserWithoutId>;
-export type User = z.infer<typeof ClientUser>;
+export const UserRegisterSchema = z
+  .object({
+    name: z
+      .string()
+      .min(2, {
+        message: "Імʼя занадто коротке",
+      })
+      .max(32),
+  })
+  .extend(UserLoginSchema.shape);
+
+export const User = z.object({
+  id: z.number(),
+  email: z.string(),
+  name: z.string(),
+  hearts: z.number(),
+  experience: z.number(),
+  score: z.number(),
+  joinedAt: z.date(),
+});
+
+export type UserLoginFormData = z.infer<typeof UserLoginSchema>;
+export type UserRegisterFormData = z.infer<typeof UserRegisterSchema>;

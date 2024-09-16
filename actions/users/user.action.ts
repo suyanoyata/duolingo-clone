@@ -1,15 +1,31 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { CreateUser, UserWithoutId } from "@/types/User";
 import { generateSession, verifySession } from "@/lib/session-helper";
 import { hashPassword } from "@/lib/hash-password";
+import {
+  User,
+  UserLoginFormData,
+  UserLoginSchema,
+  UserRegisterFormData,
+  UserRegisterSchema,
+} from "@/types/User";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-const createUser = async (user: CreateUser) => {
-  const createUser = UserWithoutId.parse(user);
-  console.log("[+] parsed user");
+const createUser = async (user: UserRegisterFormData) => {
+  const createUser = UserRegisterSchema.parse(user);
+
+  const exists = await prisma.user.findFirst({
+    where: {
+      email: createUser.email,
+    },
+  });
+
+  if (exists) {
+    throw new Error("User already exists");
+  }
 
   const create = await prisma.user.create({
     data: {
@@ -17,27 +33,45 @@ const createUser = async (user: CreateUser) => {
       email: createUser.email,
       password: await hashPassword(createUser.password),
       hearts: 5,
+      experience: 0,
+      score: 0,
     },
   });
 
-  console.log("Created new user", create);
+  generateSession(create);
 
   return create;
 };
 
-const getUsers = async () => {
-  const users = await prisma.user.findMany({});
+const loginUser = async (user: UserLoginFormData) => {
+  const userData = UserLoginSchema.parse(user);
 
-  if (users.length == 0) {
-    return [];
+  const exists = await prisma.user.findFirst({
+    where: {
+      email: userData.email,
+    },
+  });
+
+  if (!exists) {
+    throw {
+      error: "User not found",
+    };
   }
 
-  generateSession(users![0]);
+  const password = await bcrypt.compare(userData.password, exists.password);
 
-  return users;
+  if (!password) {
+    throw {
+      error: "Password is incorrect",
+    };
+  }
+
+  generateSession(exists);
+
+  return exists;
 };
 
-const getSession = async () => {
+const getCurrentUser = async () => {
   const session = await verifySession();
 
   const user = await prisma.user.findUniqueOrThrow({
@@ -46,7 +80,32 @@ const getSession = async () => {
     },
   });
 
+  return User.parse(user);
+};
+
+const getUser = async (name: string) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      name,
+    },
+    select: {
+      id: true,
+      name: true,
+      score: true,
+      joinedAt: true,
+    },
+  });
+
+  if (!user) {
+    return {
+      id: 0,
+      name: "",
+      score: 0,
+      joinedAt: new Date(),
+    };
+  }
+
   return user;
 };
 
-export { createUser, getUsers, getSession };
+export { createUser, getCurrentUser, getUser, loginUser };

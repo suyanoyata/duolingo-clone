@@ -9,76 +9,18 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  name     String
-  password String
-  hearts   Int
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String   @unique
+  password   String
+  hearts     Int      @default(5)
+  experience Int      @default(0)
+  score      Int      @default(0)
+  joinedAt   DateTime @default(now())
 }
 
 model Language {
-  id     Int      @id @default(autoincrement())
-  code   String   @unique
-  name   String
-  lesson Lesson[]
-  word   Word[]
-}
-
-model Lesson {
-  id           Int         @id @default(autoincrement())
-  name         String
-  order        Int
-  language     Language    @relation(fields: [languageCode], references: [code])
-  languageCode String
-  challenge    Challenge[]
-}
-
-model Challenge {
-  id            Int            @id @default(autoincrement())
-  name          String
-  order         Int
-  type          ChallengeType
-  lessonId      Int
-  lesson        Lesson         @relation(fields: [lessonId], references: [id])
-  selectOptions SelectOption[]
-  sentenceWords SentenceWord[]
-}
-
-model Word {
-  id           Int            @id @default(autoincrement())
-  text         String
-  language     Language       @relation(fields: [languageCode], references: [code])
-  languageCode String
-  translations Translation[]
-  sentenceWord SentenceWord[]
-}
-
-model Translation {
-  id                 Int    @id @default(autoincrement())
-  wordId             Int
-  word               Word   @relation(fields: [wordId], references: [id])
-  translatedText     String
-  translatedLanguage String
-}
-
-model SentenceWord {
-  id          Int       @id @default(autoincrement())
-  challengeId Int
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
-  wordId      Int
-  word        Word      @relation(fields: [wordId], references: [id])
-  order       Int
-}
-
-model SelectOption {
-  id          Int       @id @default(autoincrement())
-  text        String
-  isCorrect   Boolean
-  challengeId Int
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
-}
-
-enum ChallengeType {
-  select
-  sentence
+  id   Int    @id @default(autoincrement())
+  code String @unique
+  name String
 }

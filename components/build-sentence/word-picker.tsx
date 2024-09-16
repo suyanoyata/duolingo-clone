@@ -1,22 +1,20 @@
 import { Button as ShadButton } from "@/components/ui/button";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-import { SentenceFramerAnimationConfig } from "@/types/framer/sentence-animation-config";
-import { SentenceWord } from "@/types/Game";
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 
 export const WordPicker = (props: {
-  words: SentenceWord[];
-  animationConfig: SentenceFramerAnimationConfig;
-  setWords: (words: SentenceWord[]) => void;
-  setSentence: Dispatch<SetStateAction<SentenceWord[]>>;
+  words: never[];
+  animationConfig: never;
+  setWords: (words: never[]) => void;
+  setSentence: Dispatch<SetStateAction<never[]>>;
 }) => {
   const { words, animationConfig, setWords, setSentence } = props;
   const Button = motion.create(ShadButton);
 
   const { setWord } = useTextToSpeech(words);
 
-  const addWordToSentence = (word: SentenceWord) => {
+  const addWordToSentence = (word: never) => {
     const newWords = [...words];
     newWords[word.id].isAvailable = false;
     setWords(newWords);
