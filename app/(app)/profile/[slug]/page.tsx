@@ -2,12 +2,12 @@
 
 import { getCourse } from "@/actions/courses/courses.action";
 import { getUser } from "@/actions/users/user.action";
+import { CountryFlag } from "@/components/country-flag";
 import { LoadingOverlay } from "@/components/loading-overlay";
 import { Logout } from "@/components/logout-button";
 import { localDate } from "@/lib/date";
 import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -71,17 +71,7 @@ export default function Page({ params }: { params: { slug: string } }) {
               Приєднався: {localDate(profileData.joinedAt)}
             </p>
           </div>
-          {courseData?.code && (
-            <div>
-              <Image
-                src={`/flags/${courseData.code}.svg`}
-                alt=""
-                width={36}
-                height={36}
-                className="rounded-sm shadow-sm ml-auto"
-              />
-            </div>
-          )}
+          {courseData?.code && <CountryFlag code={courseData.code} size={36} />}
         </div>
         <div className="h-[2px] bg-zinc-100 w-full my-6" />
         <h2 className="text-zinc-700 font-extrabold text-2xl mb-2">

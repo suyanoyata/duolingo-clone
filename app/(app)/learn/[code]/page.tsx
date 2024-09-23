@@ -5,6 +5,7 @@ import {
   getCurrentUserCourses,
   setActiveCourse,
 } from "@/actions/users/user.action";
+import { CountryFlag } from "@/components/country-flag";
 import { LoadingOverlay } from "@/components/loading-overlay";
 import { Button } from "@/components/ui/button";
 import { UnitsList } from "@/components/units/units-list";
@@ -12,7 +13,6 @@ import { clientStore } from "@/store/user-store";
 import { User } from "@prisma/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Heart } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -100,13 +100,7 @@ export default function Page({ params }: { params: { code: string } }) {
             router.push("/learn");
           }}
         >
-          <Image
-            className="rounded-sm shadow-sm"
-            src={`/flags/${courseData.code}.svg`}
-            alt=""
-            width={28}
-            height={28}
-          />
+          <CountryFlag code={courseData.code} />
         </Button>
         <Button variant="ghost" size="sm" className="text-zinc-700">
           <Heart className="fill-red-500 mr-1" size={18} strokeWidth={0} />
