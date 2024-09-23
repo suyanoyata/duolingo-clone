@@ -114,6 +114,14 @@ const subscribeToCourse = async (code: string, courseId: number) => {
     where: {
       languageCode: code,
     },
+    select: {
+      id: true,
+      Lesson: {
+        select: {
+          id: true,
+        },
+      },
+    },
   });
 
   if (!course) {
@@ -127,6 +135,7 @@ const subscribeToCourse = async (code: string, courseId: number) => {
       languageCode: code,
       score: 0,
       unitId: course.id,
+      lastCompletedLesson: course.Lesson[0].id,
     },
   });
 
