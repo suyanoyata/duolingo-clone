@@ -4,17 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 import { SidebarLink } from "./sidebar-link";
 import { getCurrentUser } from "@/actions/users/user.action";
 import { LoadingOverlay } from "./loading-overlay";
+import { useRouter } from "next/navigation";
 
 export const Sidebar = () => {
   const { data, isPending } = useQuery({
     queryKey: ["user"],
     queryFn: async () => await getCurrentUser(),
-    retry: false,
-    refetchOnWindowFocus: false,
+    enabled: true,
   });
 
-  if (isPending || !data) {
+  const router = useRouter();
+
+  if (isPending) {
     return <LoadingOverlay />;
+  }
+
+  if (!data) {
+    return router.push("/") as unknown as React.ReactNode;
   }
 
   return (

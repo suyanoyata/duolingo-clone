@@ -14,11 +14,13 @@ const buttonVariants = cva(
         primary:
           "bg-green-400 text-primary-foreground hover:bg-green-400/90 border-green-500 border-b-4 active:border-b-0",
         secondary:
-          "bg-blue-400 text-primary-foreground hover:bg-blue-400/90 border-blue-500 border-b-4 active:border-b-0",
+          "bg-sky-400 text-primary-foreground hover:bg-sky-400/90 border-sky-500 border-b-4 active:border-b-0",
         destructive:
           "bg-red-400 text-primary-foreground hover:bg-red-400/90 border-red-500 border-b-4 active:border-b-0",
         game: "bg-white text-zinc-500 border-zinc-200 hover:bg-zinc-100 border-2 border-b-[4px] active:border-b-[2px] normal-case text-base",
         ghost: "bg-transparent text-zinc-500 hover:bg-zinc-100 duration-200",
+        destructive_ghost:
+          "bg-transparent text-red-500 hover:bg-red-50 duration-200",
       },
       size: {
         default: "h-11 px-4 py-2",

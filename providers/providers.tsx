@@ -6,7 +6,19 @@ import { useState } from "react";
 import { MotionConfig } from "framer-motion";
 
 const ClientProviders = ({ children }: { children: React.ReactNode }) => {
-  const [queryClient] = useState<QueryClient>(() => new QueryClient());
+  const [queryClient] = useState<QueryClient>(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: false,
+            staleTime: 1000 * 60 * 1,
+            enabled: true,
+          },
+        },
+      }),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,7 +1,6 @@
-import { SentenceWord } from "@/types/Game";
 import { useEffect, useRef, useState } from "react";
 
-export const useTextToSpeech = (words: SentenceWord[]) => {
+export const useTextToSpeech = (words: string[]) => {
   const [word, setWord] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCache = useRef<Map<string, HTMLAudioElement>>(new Map());
@@ -9,9 +8,9 @@ export const useTextToSpeech = (words: SentenceWord[]) => {
   useEffect(() => {
     const prefetchAudio = async () => {
       words.forEach((word) => {
-        const audioUrl = `https://d7mj4aqfscim2.cloudfront.net/tts/en/token/${word.text.toLowerCase()}`;
+        const audioUrl = `https://d7mj4aqfscim2.cloudfront.net/tts/en/token/${word}`;
         const audio = new Audio(audioUrl);
-        audioCache.current.set(word.text.toLowerCase(), audio);
+        audioCache.current.set(word.toLowerCase(), audio);
       });
     };
 

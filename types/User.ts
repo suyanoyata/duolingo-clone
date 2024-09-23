@@ -28,6 +28,7 @@ export const User = z.object({
   experience: z.number(),
   score: z.number(),
   joinedAt: z.date(),
+  progressId: z.number().nullable(),
 });
 
 export type UserLoginFormData = z.infer<typeof UserLoginSchema>;

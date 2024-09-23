@@ -1,15 +1,20 @@
 import { create } from "zustand";
 
 interface UserStore {
-  user: never | null;
-  isPending: boolean;
-  setUser: (user: never) => void;
-  setIsPending(isPending: boolean): void;
+  lessonId: number;
+  currentChallengeIndex: number;
+  lastLanguageCode: string;
+  setLessonId: (lessonId: number) => void;
+  setCurrentChallengeIndex: (currentChallengeIndex: number) => void;
+  setLastLanguageCode: (lastLanguageCode: string) => void;
 }
 
 export const clientStore = create<UserStore>((set) => ({
-  user: null,
-  isPending: true,
-  setUser: (user) => set({ user }),
-  setIsPending: (isPending) => set({ isPending }),
+  lessonId: 0,
+  currentChallengeIndex: 0,
+  lastLanguageCode: "",
+  setLessonId: (lessonId: number) => set({ lessonId }),
+  setCurrentChallengeIndex: (currentChallengeIndex: number) =>
+    set({ currentChallengeIndex }),
+  setLastLanguageCode: (lastLanguageCode: string) => set({ lastLanguageCode }),
 }));

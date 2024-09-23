@@ -2,19 +2,30 @@
 
 import { getCurrentUser } from "@/actions/users/user.action";
 import { LoadingOverlay } from "@/components/loading-overlay";
-import { SelectCourse } from "@/components/select-course";
-import { useQuery } from "@tanstack/react-query";
+import { SelectCourse } from "@/components/courses/select-course";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { clientStore } from "@/store/user-store";
+import { useEffect } from "react";
 
 export default function Page() {
   const { data, isError, isPending } = useQuery({
     queryKey: ["user"],
     queryFn: async () => await getCurrentUser(),
-    retry: false,
-    refetchOnWindowFocus: false,
   });
 
   const router = useRouter();
+
+  const { lessonId, setLessonId, setCurrentChallengeIndex } = clientStore();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.removeQueries({
+      queryKey: ["lesson", lessonId],
+    });
+    setLessonId(0);
+    setCurrentChallengeIndex(0);
+  }, [lessonId, setLessonId, queryClient, setCurrentChallengeIndex]);
 
   const RenderBlock = () => {
     if (isPending || !data) {
@@ -22,14 +33,13 @@ export default function Page() {
     }
 
     if (isError) {
-      router.push("/");
-      return <LoadingOverlay />;
+      return router.push("/") as unknown as React.ReactNode;
     }
 
     return (
-      <div className="p-2">
-        <h1 className="text-3xl font-extrabold text-zinc-700 mb-2">
-          Оберіть курс для проходження
+      <div className="p-2 mx-auto max-w-[800px]">
+        <h1 className="text-3xl max-sm:text-2xl font-extrabold text-zinc-700 mb-2">
+          Оберіть мову для вивчення
         </h1>
         <SelectCourse />
       </div>

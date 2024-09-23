@@ -9,18 +9,79 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  name       String   @unique
-  password   String
-  hearts     Int      @default(5)
-  experience Int      @default(0)
-  score      Int      @default(0)
-  joinedAt   DateTime @default(now())
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String    @unique
+  password     String
+  hearts       Int       @default(5)
+  experience   Int       @default(0)
+  score        Int       @default(0)
+  joinedAt     DateTime  @default(now())
+  activeCourse Progress? @relation(fields: [progressId], references: [id])
+  progressId   Int?
+}
+
+model Progress {
+  id                  Int    @id @default(autoincrement())
+  userId              Int
+  languageCode        String
+  lastCompletedLesson Int?
+  unitId              Int    @default(0)
+  score               Int    @default(0)
+  courseId            Int
+
+  User     User[]
+  language Language @relation(fields: [languageCode], references: [code])
+  lesson   Lesson?  @relation(fields: [lastCompletedLesson], references: [id])
+
+  @@unique([userId, languageCode])
 }
 
 model Language {
-  id   Int    @id @default(autoincrement())
-  code String @unique
-  name String
+  id       Int        @id @default(autoincrement())
+  code     String     @unique
+  name     String
+  Progress Progress[]
+  Units    Unit[]
+}
+
+model Unit {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String
+  order        Int      @default(1)
+  language     Language @relation(fields: [languageCode], references: [code])
+  languageCode String
+  Lesson       Lesson[]
+}
+
+model Lesson {
+  id        Int         @id @default(autoincrement())
+  unit      Unit        @relation(fields: [unitId], references: [id])
+  order     Int         @default(1)
+  unitId    Int
+  Challenge Challenge[]
+  Progress  Progress[]
+}
+
+model Challenge {
+  id       Int           @id @default(autoincrement())
+  lesson   Lesson        @relation(fields: [lessonId], references: [id])
+  order    Int           @default(1)
+  lessonId Int
+  type     ChallengeType
+  Select   Select[]
+}
+
+model Select {
+  id          Int       @id @default(autoincrement())
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId Int
+  question    String
+  options     String[]
+  answer      String
+}
+
+enum ChallengeType {
+  SELECT
 }

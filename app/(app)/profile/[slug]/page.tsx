@@ -1,10 +1,13 @@
 "use client";
 
+import { getCourse } from "@/actions/courses/courses.action";
 import { getUser } from "@/actions/users/user.action";
 import { LoadingOverlay } from "@/components/loading-overlay";
+import { Logout } from "@/components/logout-button";
 import { localDate } from "@/lib/date";
 import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -32,6 +35,11 @@ export default function Page({ params }: { params: { slug: string } }) {
     staleTime: 1000 * 60 * 2,
   });
 
+  const { data: courseData, isPending: isCourseDataPending } = useQuery({
+    queryKey: ["profile-active-course", profileData?.progressId],
+    queryFn: async () => await getCourse(profileData?.progressId),
+  });
+
   useEffect(() => {
     if (data?.id != undefined) {
       refetch();
@@ -42,7 +50,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     return <LoadingOverlay />;
   }
 
-  if (isProfilePending || !profileData) {
+  if (isProfilePending || !profileData || isCourseDataPending) {
     return <LoadingOverlay />;
   }
 
@@ -54,12 +62,27 @@ export default function Page({ params }: { params: { slug: string } }) {
   return (
     <div className="flex flex-row flex-1 p-2 px-12 gap-6">
       <section className="flex-1">
-        <h1 className="text-3xl font-extrabold text-zinc-700">
-          {profileData.name}
-        </h1>
-        <p className="text-zinc-600">
-          Приєднався: {localDate(profileData.joinedAt)}
-        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-extrabold text-zinc-700">
+              {profileData.name}
+            </h1>
+            <p className="text-zinc-600">
+              Приєднався: {localDate(profileData.joinedAt)}
+            </p>
+          </div>
+          {courseData?.code && (
+            <div>
+              <Image
+                src={`/flags/${courseData.code}.svg`}
+                alt=""
+                width={36}
+                height={36}
+                className="rounded-sm shadow-sm ml-auto"
+              />
+            </div>
+          )}
+        </div>
         <div className="h-[2px] bg-zinc-100 w-full my-6" />
         <h2 className="text-zinc-700 font-extrabold text-2xl mb-2">
           Статистика
@@ -72,6 +95,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             <p className="font-medium text-zinc-500">Усього балів</p>
           </div>
         </div>
+        {data!.id === profileData.id && <Logout />}
       </section>
       <aside className="w-[240px] h-screen bg-zinc-100 flex items-center justify-center rounded-lg">
         <h2 className="text-zinc-400 font-medium text-xs">

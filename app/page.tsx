@@ -12,10 +12,9 @@ import { LoginForm } from "@/components/forms/login-form";
 export default function Home() {
   const { data, isPending } = useQuery({
     queryKey: ["user"],
-    queryFn: async () => await getCurrentUser(),
-    retry: false,
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 1,
+    queryFn: async () => {
+      return await getCurrentUser();
+    },
     enabled: true,
   });
   const [createAccountOpen, setCreateAccountOpen] = useState(false);
@@ -28,8 +27,7 @@ export default function Home() {
   }
 
   if (data) {
-    router.push("/learn");
-    return;
+    return router.push("/learn");
   }
 
   return (

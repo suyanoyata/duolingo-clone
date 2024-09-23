@@ -1,7 +1,11 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { generateSession, verifySession } from "@/lib/session-helper";
+import {
+  clearSession,
+  generateSession,
+  verifySession,
+} from "@/lib/session-helper";
 import { hashPassword } from "@/lib/hash-password";
 import {
   User,
@@ -12,12 +16,12 @@ import {
 } from "@/types/User";
 import bcrypt from "bcrypt";
 
-const prisma = new PrismaClient();
+const db = new PrismaClient();
 
 const createUser = async (user: UserRegisterFormData) => {
   const createUser = UserRegisterSchema.parse(user);
 
-  const exists = await prisma.user.findFirst({
+  const exists = await db.user.findFirst({
     where: {
       email: createUser.email,
     },
@@ -27,7 +31,7 @@ const createUser = async (user: UserRegisterFormData) => {
     throw new Error("User already exists");
   }
 
-  const create = await prisma.user.create({
+  const create = await db.user.create({
     data: {
       name: createUser.name,
       email: createUser.email,
@@ -46,7 +50,7 @@ const createUser = async (user: UserRegisterFormData) => {
 const loginUser = async (user: UserLoginFormData) => {
   const userData = UserLoginSchema.parse(user);
 
-  const exists = await prisma.user.findFirst({
+  const exists = await db.user.findFirst({
     where: {
       email: userData.email,
     },
@@ -74,17 +78,101 @@ const loginUser = async (user: UserLoginFormData) => {
 const getCurrentUser = async () => {
   const session = await verifySession();
 
-  const user = await prisma.user.findUniqueOrThrow({
+  try {
+    const user = await db.user.findUniqueOrThrow({
+      where: {
+        id: session.data.id,
+      },
+    });
+
+    return User.parse(user);
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      clearSession();
+      throw new Error("Session error");
+    }
+
+    console.error(error);
+  }
+};
+
+const subscribeToCourse = async (code: string, courseId: number) => {
+  const session = await verifySession();
+
+  const exists = await db.progress.findFirst({
     where: {
-      id: session.data.id,
+      userId: session.data.id,
+      languageCode: code,
     },
   });
 
-  return User.parse(user);
+  if (exists) {
+    throw new Error("User already subscribed to this course");
+  }
+
+  const course = await db.unit.findFirst({
+    where: {
+      languageCode: code,
+    },
+  });
+
+  if (!course) {
+    throw new Error("Something went wrong");
+  }
+
+  const progress = await db.progress.create({
+    data: {
+      courseId,
+      userId: session.data.id,
+      languageCode: code,
+      score: 0,
+      unitId: course.id,
+    },
+  });
+
+  return progress;
+};
+
+const setActiveCourse = async (code: string) => {
+  const session = await verifySession();
+
+  const progress = await db.progress.findFirst({
+    where: {
+      languageCode: code,
+      userId: session.data.id,
+    },
+  });
+
+  if (!progress) {
+    throw new Error("No progress found");
+  }
+
+  const user = await db.user.update({
+    where: {
+      id: session.data.id,
+    },
+    data: {
+      progressId: progress.id,
+    },
+  });
+
+  return user;
+};
+
+const getCurrentUserCourses = async () => {
+  const session = await verifySession();
+
+  const courses = await db.progress.findMany({
+    where: {
+      userId: session.data.id,
+    },
+  });
+
+  return courses;
 };
 
 const getUser = async (name: string) => {
-  const user = await prisma.user.findFirst({
+  const user = await db.user.findFirst({
     where: {
       name,
     },
@@ -93,6 +181,7 @@ const getUser = async (name: string) => {
       name: true,
       score: true,
       joinedAt: true,
+      progressId: true,
     },
   });
 
@@ -102,10 +191,19 @@ const getUser = async (name: string) => {
       name: "",
       score: 0,
       joinedAt: new Date(),
+      progressId: 0,
     };
   }
 
   return user;
 };
 
-export { createUser, getCurrentUser, getUser, loginUser };
+export {
+  createUser,
+  getCurrentUser,
+  getUser,
+  loginUser,
+  subscribeToCourse,
+  getCurrentUserCourses,
+  setActiveCourse,
+};
