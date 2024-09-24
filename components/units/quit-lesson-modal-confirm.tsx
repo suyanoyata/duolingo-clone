@@ -25,27 +25,28 @@ export const QuitLessonModal = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Зачекайте!</DialogTitle>
-        <p className="text-zinc-600 font-medium">
-          Ви справді хочете закінчити урок? Ви не зможете повернутися до нього.
-        </p>
-        <Button
-          variant="secondary"
-          onClick={() => {
-            setOpen(false);
-          }}
-        >
-          Продовжити урок
-        </Button>
-        <Button
-          onClick={() => {
-            router.push(`/learn/${lastLanguageCode}`);
-            // setLessonId(0);
-            setOpen(false);
-          }}
-          variant="destructive_ghost"
-        >
-          Закінчити
-        </Button>
+        <div className="flex flex-col gap-3">
+          <p className="text-zinc-600 font-semibold text-center">
+            Ви справді хочете закінчити урок? Ви не зможете повернутися до
+            нього.
+          </p>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            Продовжити урок
+          </Button>
+          <Button
+            onClick={() => {
+              router.push(`/learn/${lastLanguageCode}`);
+            }}
+            variant="destructive_ghost"
+          >
+            Закінчити
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

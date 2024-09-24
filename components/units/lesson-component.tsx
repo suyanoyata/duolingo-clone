@@ -69,7 +69,7 @@ export const LessonComponent = ({
         disabled={isUnitLocked || !isLessonAvailable}
         variant="primary"
         className={cn(
-          "w-20 h-20 rounded-full relative border-b-8",
+          "w-20 h-20 rounded-full relative border-b-[10px] hover:border-b-[8px]",
           isUnitLocked ||
             (!isLessonAvailable &&
               "border-zinc-500 bg-zinc-400 hover:bg-zinc-400"),

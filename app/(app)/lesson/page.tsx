@@ -8,6 +8,8 @@ import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { LessonHeader } from "@/components/units/lesson-header";
+import { AnimatePresence } from "framer-motion";
+import { LessonComplete } from "@/components/units/lesson-complete-component";
 
 export default function Page() {
   const { lessonId } = clientStore();
@@ -35,14 +37,17 @@ export default function Page() {
   return (
     <main className="max-w-[700px] mx-auto p-2">
       <LessonHeader length={data.length} user={user} />
-      {data.map((challenge, index) => (
-        <SelectChallenge
-          index={index}
-          length={data.length}
-          key={challenge.id}
-          challenge={challenge}
-        />
-      ))}
+      <AnimatePresence>
+        {data.map((challenge, index) => (
+          <SelectChallenge
+            index={index}
+            length={data.length}
+            key={challenge.id}
+            challenge={challenge}
+          />
+        ))}
+        <LessonComplete challengeLength={data.length} />
+      </AnimatePresence>
     </main>
   );
 }

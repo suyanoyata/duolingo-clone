@@ -87,7 +87,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         </div>
         {data!.id === profileData.id && <Logout />}
       </section>
-      <aside className="w-[240px] h-screen bg-zinc-100 flex items-center justify-center rounded-lg">
+      <aside className="w-[240px] h-screen bg-zinc-100 flex items-center justify-center rounded-lg max-lg:hidden">
         <h2 className="text-zinc-400 font-medium text-xs">
           achievements widget
         </h2>

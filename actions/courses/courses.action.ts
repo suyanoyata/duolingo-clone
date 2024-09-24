@@ -78,7 +78,7 @@ const increaseLessonProgress = async (
     },
   });
 
-  // taking next lesson from same unit
+  // take next lesson from same unit
   const unit = await db.unit.findFirst({
     select: {
       Lesson: {
@@ -94,7 +94,9 @@ const increaseLessonProgress = async (
     },
   });
 
+  // if there is no lessons in same unit
   if (unit!.Lesson.length === 0) {
+    // take first lesson from next unit
     const unit = await db.unit.findFirst({
       select: {
         id: true,
@@ -111,6 +113,7 @@ const increaseLessonProgress = async (
       },
     });
 
+    // set new unit and lesson
     await db.progress.update({
       where: {
         userId_languageCode: {
@@ -119,12 +122,16 @@ const increaseLessonProgress = async (
         },
       },
       data: {
+        score: {
+          increment: 15,
+        },
         unitId: unit!.id,
         lastCompletedLesson: unit?.Lesson[0].id,
       },
     });
   }
 
+  // set next lesson from same unit
   await db.progress.update({
     where: {
       userId_languageCode: {
@@ -133,6 +140,9 @@ const increaseLessonProgress = async (
       },
     },
     data: {
+      score: {
+        increment: 15,
+      },
       lastCompletedLesson: unit?.Lesson[0].id,
     },
   });

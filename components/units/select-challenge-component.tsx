@@ -1,12 +1,12 @@
-import { ChallengeType } from "@prisma/client";
+import { ChallengeType, User } from "@prisma/client";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { clientStore } from "@/store/user-store";
-import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { increaseLessonProgress } from "@/actions/courses/courses.action";
-import { toast } from "sonner";
+import { reduceHearts } from "@/actions/users/user.action";
+import { motion } from "framer-motion";
 
 type Challenge = {
   id: number;
@@ -33,17 +33,55 @@ export const SelectChallenge = ({
   challenge: Challenge;
   length: number;
 }) => {
-  const { currentChallengeIndex, setCurrentChallengeIndex } = clientStore();
-  const [selected, setSelected] = useState("");
+  const {
+    lastLanguageCode,
+    lessonId,
+    currentChallengeIndex,
+    setCurrentChallengeIndex,
+  } = clientStore();
 
-  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const [selected, setSelected] = useState("");
+  const [answerState, setAnswerState] = useState<
+    undefined | "correct" | "incorrect"
+  >();
 
   const { mutate: increaseLessonIndex } = useMutation({
     mutationKey: ["current-user-courses"],
     mutationFn: async () => {
       await increaseLessonProgress(lessonId, lastLanguageCode);
     },
+    onSuccess: () => {
+      queryClient.removeQueries({
+        queryKey: ["current-user-courses"],
+      });
+    },
   });
+
+  const { data: user } = useQuery<User>({
+    queryKey: ["user"],
+  });
+
+  const { refetch } = useQuery({
+    queryKey: ["user"],
+  });
+
+  const correctAnswerDispatch = () => {
+    setCurrentChallengeIndex(currentChallengeIndex + 1);
+    if (currentChallengeIndex + 1 === length) {
+      increaseLessonIndex();
+    }
+  };
+
+  useEffect(() => {
+    if (answerState == "incorrect") {
+      reduceHearts().then(() => refetch());
+    }
+    if (answerState == "correct") {
+      correctAnswerDispatch();
+    }
+  }, [answerState, refetch]);
 
   if (challenge.type !== ChallengeType.SELECT || challenge.Select.length == 0) {
     return null;
@@ -51,31 +89,29 @@ export const SelectChallenge = ({
 
   const challengeVariants = challenge.Select[0];
 
-  const submitResult = () => {
+  const submitResult = async () => {
     if (selected === challengeVariants.answer) {
-      correctAnswerDispatch();
+      setAnswerState("correct");
     } else {
-      toast.error("Implement incorrect answer");
+      setAnswerState("incorrect");
     }
   };
 
-  const correctAnswerDispatch = () => {
-    if (currentChallengeIndex + 1 === length) {
-      increaseLessonIndex();
-      router.push(`/learn/${lastLanguageCode}`);
-    } else {
-      setCurrentChallengeIndex(currentChallengeIndex + 1);
-    }
-  };
-
-  const { lastLanguageCode, lessonId } = clientStore();
-
-  if (currentChallengeIndex !== index) {
-    return null;
-  }
+  if (currentChallengeIndex !== index) return null;
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, translateX: 60 }}
+      transition={{
+        ease: "easeOut",
+        duration: 0.4,
+      }}
+      animate={{ opacity: 1, translateX: 0 }}
+      exit={{ opacity: 0, translateX: 60 }}
+    >
+      <h2 className="text-zinc-600 text-xl font-extrabold">
+        Перекладіть наступне речення
+      </h2>
       <h1 className="text-2xl text-zinc-800 mb-3 font-extrabold">
         {challengeVariants?.question}
       </h1>
@@ -87,8 +123,9 @@ export const SelectChallenge = ({
             }}
             variant="game"
             className={cn(
+              "h-12",
               option === selected &&
-                "bg-green-400 border-green-500 text-white hover:bg-green-400",
+                "border-green-300 bg-green-400/20 hover:bg-green-400/20 text-green-400",
             )}
             key={index}
           >
@@ -100,10 +137,12 @@ export const SelectChallenge = ({
         onClick={() => {
           submitResult();
         }}
+        disabled={selected == "" || (user && user.hearts <= 0)}
         variant="primary"
+        className="max-sm:w-full"
       >
         Відповісти
       </Button>
-    </div>
+    </motion.div>
   );
 };

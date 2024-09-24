@@ -85,7 +85,24 @@ const getCurrentUser = async () => {
       },
     });
 
-    return User.parse(user);
+    let score = 0;
+
+    const progress = await db.progress.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    progress.forEach((progress) => {
+      score += progress.score;
+    });
+
+    console.log(`Overall score is ${score}`);
+
+    return User.parse({
+      ...user,
+      score,
+    });
   } catch (error) {
     if (process.env.NODE_ENV === "production") {
       clearSession();
@@ -204,7 +221,50 @@ const getUser = async (name: string) => {
     };
   }
 
-  return user;
+  const progress = await db.progress.findMany({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  let score = 0;
+
+  progress.forEach((progress) => {
+    score += progress.score;
+  });
+
+  return {
+    ...user,
+    score,
+  };
+};
+
+const reduceHearts = async () => {
+  const session = await verifySession();
+
+  const currentHearts = await db.user.findFirst({
+    where: {
+      id: session.data.id,
+    },
+    select: {
+      hearts: true,
+    },
+  });
+
+  if (currentHearts?.hearts === 0) {
+    throw new Error("No hearts left");
+  }
+
+  return await db.user.update({
+    where: {
+      id: session.data.id,
+    },
+    data: {
+      hearts: {
+        decrement: 1,
+      },
+    },
+  });
 };
 
 export {
@@ -215,4 +275,5 @@ export {
   subscribeToCourse,
   getCurrentUserCourses,
   setActiveCourse,
+  reduceHearts,
 };
