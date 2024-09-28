@@ -20,6 +20,7 @@ export const LessonList = ({ lessons }: { lessons: Lesson[] }) => {
           isLessonAvailable={
             data[0].lastCompletedLesson! >= lesson.id || index === 0
           }
+          isPreviousLesson={data[0].lastCompletedLesson! - 1 >= lesson.id}
           isUnitLocked={data[0].unitId < lesson.unitId}
           key={lesson.id}
           id={lesson.id}

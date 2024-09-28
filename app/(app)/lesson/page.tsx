@@ -12,7 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import { LessonComplete } from "@/components/units/lesson-complete-component";
 
 export default function Page() {
-  const { lessonId } = clientStore();
+  const { lessonId, isPreviousChallengeCompleting } = clientStore();
 
   const router = useRouter();
 
@@ -40,6 +40,7 @@ export default function Page() {
       <AnimatePresence>
         {data.map((challenge, index) => (
           <SelectChallenge
+            isPreviousChallengeCompleting={isPreviousChallengeCompleting}
             index={index}
             length={data.length}
             key={challenge.id}

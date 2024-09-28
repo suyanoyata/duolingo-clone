@@ -7,6 +7,7 @@ import { lessonCycle } from "@/lib/determine-lesson-cycle";
 
 export const LessonComponent = ({
   isCurrentLesson,
+  isPreviousLesson,
   isLessonAvailable,
   isUnitLocked,
   id,
@@ -14,6 +15,7 @@ export const LessonComponent = ({
   length,
 }: {
   isCurrentLesson: boolean;
+  isPreviousLesson: boolean;
   isLessonAvailable: boolean;
   isUnitLocked: boolean;
   id: number;
@@ -24,7 +26,7 @@ export const LessonComponent = ({
   const isLast = index === length - 1;
   const Icon = isLast ? Crown : Star;
 
-  const { setLessonId } = clientStore();
+  const { setLessonId, setPreviousChallengeCompleting } = clientStore();
   const router = useRouter();
 
   const BounceComponent = () => {
@@ -60,8 +62,8 @@ export const LessonComponent = ({
     <div>
       <Button
         onClick={() => {
-          if (!isCurrentLesson && isLessonAvailable) {
-            throw new Error("Implement previous lesson start");
+          if (!isCurrentLesson && isLessonAvailable && isPreviousLesson) {
+            setPreviousChallengeCompleting(true);
           }
           setLessonId(id);
           router.push("/lesson");

@@ -239,20 +239,28 @@ const getUser = async (name: string) => {
   };
 };
 
-const reduceHearts = async () => {
-  const session = await verifySession();
-
-  const currentHearts = await db.user.findFirst({
+const getCurrentHearts = async (id: number) => {
+  return await db.user.findFirst({
     where: {
-      id: session.data.id,
+      id,
     },
     select: {
       hearts: true,
     },
   });
+};
+
+const reduceHearts = async () => {
+  const session = await verifySession();
+
+  const currentHearts = await getCurrentHearts(session.data.id);
 
   if (currentHearts?.hearts === 0) {
-    throw new Error("No hearts left");
+    return await db.user.findFirst({
+      where: {
+        id: session.data.id,
+      },
+    });
   }
 
   return await db.user.update({

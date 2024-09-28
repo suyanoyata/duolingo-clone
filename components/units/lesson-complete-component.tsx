@@ -2,9 +2,12 @@ import { clientStore } from "@/store/user-store";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { ButtonTitle } from "../title-button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "@prisma/client";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import ReactConfetti from "react-confetti";
+import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 
 export const LessonComplete = ({
   challengeLength,
@@ -13,9 +16,22 @@ export const LessonComplete = ({
 }) => {
   const { currentChallengeIndex, lastLanguageCode } = clientStore();
 
-  const { data: user } = useQuery<User>({
+  const { data: user, refetch } = useQuery<User>({
     queryKey: ["user"],
   });
+
+  const dimensions = useWindowDimensions();
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (currentChallengeIndex == challengeLength) {
+      queryClient.removeQueries({
+        queryKey: ["profile", user?.name],
+      });
+      refetch();
+    }
+  }, [currentChallengeIndex]);
 
   const router = useRouter();
 
@@ -33,6 +49,12 @@ export const LessonComplete = ({
         animate={{ opacity: 1 }}
       />
       <main className="flex flex-col items-center justify-center h-screen w-full absolute top-0 left-0 space-y-2 px-3 z-30">
+        <ReactConfetti
+          width={dimensions.width}
+          height={dimensions.height}
+          recycle={false}
+          className="z-20"
+        />
         <h1 className="text-2xl font-extrabold text-zinc-800">
           Ви пройшли урок
         </h1>

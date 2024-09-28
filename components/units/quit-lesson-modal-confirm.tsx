@@ -27,8 +27,8 @@ export const QuitLessonModal = () => {
         <DialogTitle>Зачекайте!</DialogTitle>
         <div className="flex flex-col gap-3">
           <p className="text-zinc-600 font-semibold text-center">
-            Ви справді хочете закінчити урок? Ви не зможете повернутися до
-            нього.
+            Ви справді хочете закінчити урок? Вам доведеться проходити його
+            спочатку.
           </p>
           <Button
             variant="secondary"

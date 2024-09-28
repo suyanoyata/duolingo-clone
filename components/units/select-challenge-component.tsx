@@ -28,10 +28,12 @@ export const SelectChallenge = ({
   challenge,
   index,
   length,
+  isPreviousChallengeCompleting,
 }: {
   index: number;
   challenge: Challenge;
   length: number;
+  isPreviousChallengeCompleting: boolean | undefined;
 }) => {
   const {
     lastLanguageCode,
@@ -70,7 +72,9 @@ export const SelectChallenge = ({
   const correctAnswerDispatch = () => {
     setCurrentChallengeIndex(currentChallengeIndex + 1);
     if (currentChallengeIndex + 1 === length) {
-      increaseLessonIndex();
+      if (!isPreviousChallengeCompleting) {
+        increaseLessonIndex();
+      }
     }
   };
 
@@ -89,12 +93,10 @@ export const SelectChallenge = ({
 
   const challengeVariants = challenge.Select[0];
 
-  const submitResult = async () => {
-    if (selected === challengeVariants.answer) {
-      setAnswerState("correct");
-    } else {
-      setAnswerState("incorrect");
-    }
+  const submitResult = () => {
+    selected === challengeVariants.answer
+      ? setAnswerState("correct")
+      : setAnswerState("incorrect");
   };
 
   if (currentChallengeIndex !== index) return null;
@@ -137,7 +139,10 @@ export const SelectChallenge = ({
         onClick={() => {
           submitResult();
         }}
-        disabled={selected == "" || (user && user.hearts <= 0)}
+        disabled={
+          selected == "" ||
+          (user && user.hearts <= 0 && !isPreviousChallengeCompleting)
+        }
         variant="primary"
         className="max-sm:w-full"
       >

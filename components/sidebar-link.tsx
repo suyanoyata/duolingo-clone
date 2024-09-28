@@ -6,9 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const SidebarLink = ({
+  className,
   children,
   href,
 }: {
+  className?: string;
   children?: React.ReactNode;
   href: string;
 }) => {
@@ -20,8 +22,9 @@ export const SidebarLink = ({
       asChild
       variant="ghost"
       className={cn(
-        "justify-start text-base",
+        "justify-start text-base flex gap-2",
         isFocused && "bg-sky-50 outline outline-2 outline-sky-200 text-sky-500",
+        className,
       )}
     >
       <Link href={href}>{children}</Link>

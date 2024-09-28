@@ -12,7 +12,8 @@ export const LessonHeader = ({
   user: User;
   length: number;
 }) => {
-  const { currentChallengeIndex } = clientStore();
+  const { currentChallengeIndex, isPreviousChallengeCompleting } =
+    clientStore();
   return (
     <div className="flex gap-2 items-center">
       <QuitLessonModal />
@@ -25,6 +26,11 @@ export const LessonHeader = ({
           className="w-0 bg-green-400 h-full rounded-full"
         />
       </div>
+      {isPreviousChallengeCompleting && (
+        <Button variant="ghost" size="sm">
+          Повторення
+        </Button>
+      )}
       <Button variant="ghost" size="sm" className="text-zinc-700">
         <Heart className="fill-red-500 mr-1" size={18} strokeWidth={0} />
         {user.hearts}

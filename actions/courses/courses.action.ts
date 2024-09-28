@@ -5,6 +5,14 @@ import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
 
+const getCourseByCode = async (code: string) => {
+  return await db.language.findUnique({
+    where: {
+      code,
+    },
+  });
+};
+
 const getCourse = async (id: number | undefined | null) => {
   if (!id) {
     throw new Error("No course id provided");
@@ -66,20 +74,11 @@ const getLesson = async (lessonId: number) => {
   });
 };
 
-const increaseLessonProgress = async (
+const getLessonFromSameUnit = async (
   lessonId: number,
   languageCode: string,
 ) => {
-  const session = await verifySession();
-
-  const lesson = await db.lesson.findFirst({
-    where: {
-      id: lessonId,
-    },
-  });
-
-  // take next lesson from same unit
-  const unit = await db.unit.findFirst({
+  return await db.unit.findFirst({
     select: {
       Lesson: {
         where: {
@@ -93,25 +92,45 @@ const increaseLessonProgress = async (
       languageCode,
     },
   });
+};
+
+const getFirstLessonFromNextUnit = async (unitId: number) => {
+  return await db.unit.findFirst({
+    select: {
+      id: true,
+      Lesson: {
+        select: {
+          id: true,
+        },
+      },
+    },
+    where: {
+      id: {
+        gt: unitId,
+      },
+    },
+  });
+};
+
+const increaseLessonProgress = async (
+  lessonId: number,
+  languageCode: string,
+) => {
+  const session = await verifySession();
+
+  const incrementHearts = session.data.hearts >= 5 ? 0 : 1;
+
+  const lesson = await db.lesson.findFirst({
+    where: {
+      id: lessonId,
+    },
+  });
+
+  const unit = await getLessonFromSameUnit(lessonId, languageCode);
 
   // if there is no lessons in same unit
   if (unit!.Lesson.length === 0) {
-    // take first lesson from next unit
-    const unit = await db.unit.findFirst({
-      select: {
-        id: true,
-        Lesson: {
-          select: {
-            id: true,
-          },
-        },
-      },
-      where: {
-        id: {
-          gt: lesson!.unitId,
-        },
-      },
-    });
+    const unit = await getFirstLessonFromNextUnit(lesson!.unitId);
 
     // set new unit and lesson
     await db.progress.update({
@@ -129,23 +148,41 @@ const increaseLessonProgress = async (
         lastCompletedLesson: unit?.Lesson[0].id,
       },
     });
+  } else {
+    // set next lesson from same unit
+    await db.progress.update({
+      where: {
+        userId_languageCode: {
+          userId: session.data.id,
+          languageCode,
+        },
+      },
+      data: {
+        score: {
+          increment: 15,
+        },
+        lastCompletedLesson: unit?.Lesson[0].id,
+      },
+    });
   }
 
-  // set next lesson from same unit
-  await db.progress.update({
+  await db.user.update({
     where: {
-      userId_languageCode: {
-        userId: session.data.id,
-        languageCode,
-      },
+      id: session.data.id,
     },
     data: {
-      score: {
-        increment: 15,
+      hearts: {
+        increment: incrementHearts,
       },
-      lastCompletedLesson: unit?.Lesson[0].id,
     },
   });
 };
 
-export { getCourse, getUnits, getLessons, getLesson, increaseLessonProgress };
+export {
+  getCourse,
+  getCourseByCode,
+  getUnits,
+  getLessons,
+  getLesson,
+  increaseLessonProgress,
+};
