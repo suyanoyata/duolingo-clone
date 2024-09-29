@@ -9,6 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export async function GET(req: NextRequest) {
+  console.log({
+    filename: __filename,
+    dirname: __dirname,
+  });
+
   const params = req.nextUrl.searchParams;
 
   const course = await getCourseByCode(params.get("code") || "");
@@ -47,7 +52,7 @@ export async function GET(req: NextRequest) {
           style={{
             fontFamily: "Nunito Bold",
           }}
-          tw="inline-flex items-center justify-center rounded-xl font-bold bg-sky-400 text-white uppercase border-sky-500 border-b-4 h-15 mt-4 max-w-[240px]"
+          tw="flex items-center justify-center rounded-xl font-bold bg-sky-400 text-white uppercase border-sky-500 border-b-4 h-15 mt-4 max-w-[240px]"
         >
           Почати
         </div>
