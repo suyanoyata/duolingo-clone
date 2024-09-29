@@ -2,8 +2,6 @@ import { getCourseByCode } from "@/actions/courses/courses.action";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
-export const runtime = "edge";
-
 export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
 
