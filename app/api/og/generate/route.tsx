@@ -1,5 +1,5 @@
 import { getCourseByCode } from "@/actions/courses/courses.action";
-import { ImageResponse } from "next/og";
+import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -7,9 +7,9 @@ export async function GET(req: NextRequest) {
 
   const course = await getCourseByCode(params.get("code") || "");
 
-  const nunito = await fetch(new URL("./nunito.ttf", import.meta.url)).then(
-    (res) => res.arrayBuffer(),
-  );
+  const path = new URL("../../../../public/fonts/nunito.ttf", import.meta.url);
+
+  const nunito = await fetch(path).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     (
