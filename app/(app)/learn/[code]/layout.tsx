@@ -11,10 +11,12 @@ export async function generateMetadata({
 
     return {
       title: `Fluenty - ${course?.name} мова`,
-      description: `Почніть вивчати ${course?.name.slice(0, -1)}у мову із легкістю вже зараз`,
+      description: `Почніть вдосконалювати свою ${course?.name.slice(0, -1)}у мову.`,
       openGraph: {
         images: [
           {
+            width: 1200,
+            height: 600,
             url:
               process.env.NODE_ENV == "production"
                 ? `https://duolingo-clone-five.vercel.app/og?code=${params.code}`
@@ -35,7 +37,6 @@ export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-  params: { code: string };
 }>) {
   return children;
 }

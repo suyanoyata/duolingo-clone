@@ -97,8 +97,6 @@ const getCurrentUser = async () => {
       score += progress.score;
     });
 
-    console.log(`Overall score is ${score}`);
-
     return User.parse({
       ...user,
       score,
