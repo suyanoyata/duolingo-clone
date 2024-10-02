@@ -42,7 +42,7 @@ const createUser = async (user: UserRegisterFormData) => {
     },
   });
 
-  generateSession(create);
+  await generateSession(create);
 
   return create;
 };
@@ -70,13 +70,14 @@ const loginUser = async (user: UserLoginFormData) => {
     };
   }
 
-  generateSession(exists);
+  await generateSession(exists);
 
   return exists;
 };
 
 const getCurrentUser = async () => {
   const session = await verifySession();
+  console.log(session);
 
   try {
     const user = await db.user.findUniqueOrThrow({
@@ -96,8 +97,6 @@ const getCurrentUser = async () => {
     progress.forEach((progress) => {
       score += progress.score;
     });
-
-    console.log(`Overall score is ${score}`);
 
     return User.parse({
       ...user,

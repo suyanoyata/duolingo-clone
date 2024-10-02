@@ -1,11 +1,13 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { sign, verify } from "jsonwebtoken";
+import { jwtVerify, SignJWT } from "jose";
 import { User } from "@prisma/client";
 
-const generateSession = (data: User) => {
-  const token = sign({ id: data.id }, process.env.JWT_SECRET as string);
+const generateSession = async (data: User) => {
+  const token = await new SignJWT({ id: data.id })
+    .setProtectedHeader({ alg: "HS256" })
+    .sign(new TextEncoder().encode(process.env.JWT_SECRET as string));
 
   const cookie = cookies();
   const expire_date = Date.now() + 7 * 24 * 60 * 60 * 1000;
@@ -25,11 +27,14 @@ const verifySession = async (): Promise<{
     if (!cookie?.value) {
       throw Error();
     }
-    const dbUser = verify(cookie.value, process.env.JWT_SECRET as string);
+    const dbUser = await jwtVerify(
+      cookie.value,
+      new TextEncoder().encode(process.env.JWT_SECRET),
+    );
 
     return {
       code: 200,
-      data: dbUser as unknown,
+      data: dbUser.payload as User,
     } as never;
   } catch (error) {
     return {

@@ -1,14 +1,26 @@
-import { getCourseByCode } from "@/actions/courses/courses.action";
+import { getCourseByCode } from "@/actions/courses/courses.edge-action";
 import { NextRequest } from "next/server";
-import { readFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { ImageResponse } from "@vercel/og";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
+  const regular = await fetch(
+    new URL("../../public/fonts/Nunito-Regular.ttf", import.meta.url),
+  );
+  const medium = await fetch(
+    new URL("../../public/fonts/Nunito-Medium.ttf", import.meta.url),
+  );
+  const semibold = await fetch(
+    new URL("../../public/fonts/Nunito-SemiBold.ttf", import.meta.url),
+  );
+  const bold = await fetch(
+    new URL("../../public/fonts/Nunito-Bold.ttf", import.meta.url),
+  );
+  const black = await fetch(
+    new URL("../../public/fonts/Nunito-Black.ttf", import.meta.url),
+  );
+
   const params = req.nextUrl.searchParams;
 
   const course = await getCourseByCode(params.get("code") || "");
@@ -29,7 +41,15 @@ export async function GET(req: NextRequest) {
         }}
       >
         <div
-          tw="flex text-4xl text-zinc-700 my-0 py-0 leading-none"
+          tw="top-4 left-4 absolute flex text-zinc-400"
+          style={{
+            fontFamily: "Nunito Black",
+          }}
+        >
+          fluenty
+        </div>
+        <div
+          tw="flex text-4xl text-zinc-600 my-0 py-0 leading-none"
           style={{
             fontFamily: "Nunito Bold",
           }}
@@ -47,7 +67,7 @@ export async function GET(req: NextRequest) {
           style={{
             fontFamily: "Nunito Bold",
           }}
-          tw="inline-flex items-center justify-center rounded-xl font-bold bg-sky-400 text-white uppercase border-sky-500 border-b-4 h-15 mt-4 max-w-[240px]"
+          tw="flex items-center justify-center rounded-xl font-bold bg-sky-400 text-white uppercase border-sky-500 border-b-4 h-15 mt-4 max-w-[240px]"
         >
           Почати
         </div>
@@ -60,33 +80,31 @@ export async function GET(req: NextRequest) {
       fonts: [
         {
           name: "Nunito",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Regular.ttf"),
-          ),
+          data: await regular.arrayBuffer(),
           style: "normal",
           weight: 400,
         },
         {
           name: "Nunito Medium",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Medium.ttf"),
-          ),
+          data: await medium.arrayBuffer(),
           style: "normal",
           weight: 500,
         },
         {
+          name: "Nunito SemiBold",
+          data: await semibold.arrayBuffer(),
+          style: "normal",
+          weight: 600,
+        },
+        {
           name: "Nunito Bold",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Bold.ttf"),
-          ),
+          data: await bold.arrayBuffer(),
           style: "normal",
           weight: 700,
         },
         {
           name: "Nunito Black",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Black.ttf"),
-          ),
+          data: await black.arrayBuffer(),
           style: "normal",
           weight: 900,
         },
