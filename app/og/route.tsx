@@ -5,15 +5,6 @@ import { ImageResponse } from "@vercel/og";
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
-  const regular = await fetch(
-    new URL("../../public/fonts/Nunito-Regular.ttf", import.meta.url),
-  );
-  const medium = await fetch(
-    new URL("../../public/fonts/Nunito-Medium.ttf", import.meta.url),
-  );
-  const semibold = await fetch(
-    new URL("../../public/fonts/Nunito-SemiBold.ttf", import.meta.url),
-  );
   const bold = await fetch(
     new URL("../../public/fonts/Nunito-Bold.ttf", import.meta.url),
   );
@@ -34,7 +25,6 @@ export async function GET(req: NextRequest) {
           height: "100%",
           width: "100%",
           padding: "10px 20px",
-          fontFamily: "Nunito, sans-serif",
           justifyContent: "center",
           fontSize: 28,
           backgroundColor: "white",
@@ -76,26 +66,7 @@ export async function GET(req: NextRequest) {
     {
       width: 1200,
       height: 600,
-      // debug: true,
       fonts: [
-        {
-          name: "Nunito",
-          data: await regular.arrayBuffer(),
-          style: "normal",
-          weight: 400,
-        },
-        {
-          name: "Nunito Medium",
-          data: await medium.arrayBuffer(),
-          style: "normal",
-          weight: 500,
-        },
-        {
-          name: "Nunito SemiBold",
-          data: await semibold.arrayBuffer(),
-          style: "normal",
-          weight: 600,
-        },
         {
           name: "Nunito Bold",
           data: await bold.arrayBuffer(),

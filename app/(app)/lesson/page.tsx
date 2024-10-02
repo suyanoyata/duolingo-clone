@@ -26,7 +26,9 @@ export default function Page() {
   });
 
   if (lessonId == 0) {
-    router.push("/learn");
+    if (typeof window != "undefined") {
+      router.push("/learn");
+    }
     return <LoadingOverlay />;
   }
 
