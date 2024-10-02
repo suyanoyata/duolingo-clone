@@ -1,5 +1,6 @@
 import { getCourseByCode } from "@/actions/courses/courses.action";
 import { type Metadata } from "next";
+import { headers as NextHeaders } from "next/headers";
 
 export async function generateMetadata({
   params,
@@ -9,6 +10,12 @@ export async function generateMetadata({
   if (typeof params.code === "string") {
     const course = await getCourseByCode(params.code);
 
+    const headers = NextHeaders();
+    const origin =
+      process.env.NODE_ENV == "production"
+        ? `https://${headers.get("host")}`
+        : `http://${headers.get("host")}`;
+
     return {
       title: `Fluenty - ${course?.name} мова`,
       description: `Почніть вдосконалювати свою ${course?.name.slice(0, -1)}у мову.`,
@@ -17,10 +24,7 @@ export async function generateMetadata({
           {
             width: 1200,
             height: 600,
-            url:
-              process.env.NODE_ENV == "production"
-                ? `https://duolingo-clone-five.vercel.app/og?code=${params.code}`
-                : `http://localhost:3000/og?code=${params.code}`,
+            url: `${origin}/og?code=${params.code}`,
           },
         ],
       },
