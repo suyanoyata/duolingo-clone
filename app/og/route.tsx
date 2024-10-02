@@ -1,19 +1,21 @@
 import { getCourseByCode } from "@/actions/courses/courses.action";
 import { NextRequest } from "next/server";
-import { readFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+// import { dirname, join } from "node:path";
+// import { fileURLToPath } from "node:url";
 import { ImageResponse } from "@vercel/og";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+
+export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
-  console.log({
-    filename: __filename,
-    dirname: __dirname,
-  });
-
+  const regular = await fetch(
+    new URL("/public/Nunito-Regular.ttf", import.meta.url),
+  );
+  const medium = await fetch(
+    new URL("/public/Nunito-Medium.ttf", import.meta.url),
+  );
   const params = req.nextUrl.searchParams;
 
   const course = await getCourseByCode(params.get("code") || "");
@@ -34,7 +36,15 @@ export async function GET(req: NextRequest) {
         }}
       >
         <div
-          tw="flex text-4xl text-zinc-700 my-0 py-0 leading-none"
+          tw="top-4 left-4 absolute flex text-zinc-400"
+          style={{
+            fontFamily: "Nunito Black",
+          }}
+        >
+          fluenty
+        </div>
+        <div
+          tw="flex text-4xl text-zinc-600 my-0 py-0 leading-none"
           style={{
             fontFamily: "Nunito Bold",
           }}
@@ -65,36 +75,32 @@ export async function GET(req: NextRequest) {
       fonts: [
         {
           name: "Nunito",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Regular.ttf"),
-          ),
+          data: await regular.arrayBuffer(),
           style: "normal",
           weight: 400,
         },
         {
           name: "Nunito Medium",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Medium.ttf"),
-          ),
+          data: await medium.arrayBuffer(),
           style: "normal",
           weight: 500,
         },
-        {
-          name: "Nunito Bold",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Bold.ttf"),
-          ),
-          style: "normal",
-          weight: 700,
-        },
-        {
-          name: "Nunito Black",
-          data: await readFile(
-            join(__dirname, "../../public/fonts/Nunito-Black.ttf"),
-          ),
-          style: "normal",
-          weight: 900,
-        },
+        // {
+        //   name: "Nunito Bold",
+        //   data: await readFile(
+        //     join(__dirname, "../../public/fonts/Nunito-Bold.ttf"),
+        //   ),
+        //   style: "normal",
+        //   weight: 700,
+        // },
+        // {
+        //   name: "Nunito Black",
+        //   data: await readFile(
+        //     join(__dirname, "../../public/fonts/Nunito-Black.ttf"),
+        //   ),
+        //   style: "normal",
+        //   weight: 900,
+        // },
       ],
     },
   );
