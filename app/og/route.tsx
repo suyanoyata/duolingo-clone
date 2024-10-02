@@ -11,10 +11,10 @@ export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   const regular = await fetch(
-    new URL("/public/Nunito-Regular.ttf", import.meta.url),
+    new URL("/public/fonts/Nunito-Regular.ttf", import.meta.url),
   );
   const medium = await fetch(
-    new URL("/public/Nunito-Medium.ttf", import.meta.url),
+    new URL("/public/fonts/Nunito-Medium.ttf", import.meta.url),
   );
   const params = req.nextUrl.searchParams;
 
