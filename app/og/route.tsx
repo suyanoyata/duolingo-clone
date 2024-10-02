@@ -1,21 +1,26 @@
-import { getCourseByCode } from "@/actions/courses/courses.action";
+import { getCourseByCode } from "@/actions/courses/courses.edge-action";
 import { NextRequest } from "next/server";
-// import { dirname, join } from "node:path";
-// import { fileURLToPath } from "node:url";
 import { ImageResponse } from "@vercel/og";
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
 
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   const regular = await fetch(
-    new URL("/public/fonts/Nunito-Regular.ttf", import.meta.url),
+    new URL("../../public/fonts/Nunito-Regular.ttf", import.meta.url),
   );
   const medium = await fetch(
-    new URL("/public/fonts/Nunito-Medium.ttf", import.meta.url),
+    new URL("../../public/fonts/Nunito-Medium.ttf", import.meta.url),
   );
+  const semibold = await fetch(
+    new URL("../../public/fonts/Nunito-SemiBold.ttf", import.meta.url),
+  );
+  const bold = await fetch(
+    new URL("../../public/fonts/Nunito-Bold.ttf", import.meta.url),
+  );
+  const black = await fetch(
+    new URL("../../public/fonts/Nunito-Black.ttf", import.meta.url),
+  );
+
   const params = req.nextUrl.searchParams;
 
   const course = await getCourseByCode(params.get("code") || "");
@@ -85,22 +90,24 @@ export async function GET(req: NextRequest) {
           style: "normal",
           weight: 500,
         },
-        // {
-        //   name: "Nunito Bold",
-        //   data: await readFile(
-        //     join(__dirname, "../../public/fonts/Nunito-Bold.ttf"),
-        //   ),
-        //   style: "normal",
-        //   weight: 700,
-        // },
-        // {
-        //   name: "Nunito Black",
-        //   data: await readFile(
-        //     join(__dirname, "../../public/fonts/Nunito-Black.ttf"),
-        //   ),
-        //   style: "normal",
-        //   weight: 900,
-        // },
+        {
+          name: "Nunito SemiBold",
+          data: await semibold.arrayBuffer(),
+          style: "normal",
+          weight: 600,
+        },
+        {
+          name: "Nunito Bold",
+          data: await bold.arrayBuffer(),
+          style: "normal",
+          weight: 700,
+        },
+        {
+          name: "Nunito Black",
+          data: await black.arrayBuffer(),
+          style: "normal",
+          weight: 900,
+        },
       ],
     },
   );
