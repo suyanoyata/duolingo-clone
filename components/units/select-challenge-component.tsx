@@ -3,8 +3,7 @@ import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { clientStore } from "@/store/user-store";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { increaseLessonProgress } from "@/actions/courses/courses.action";
+import { useQuery } from "@tanstack/react-query";
 import { reduceHearts } from "@/actions/users/user.action";
 import { motion } from "framer-motion";
 
@@ -29,37 +28,20 @@ export const SelectChallenge = ({
   index,
   length,
   isPreviousChallengeCompleting,
+  setCompleted,
 }: {
   index: number;
   challenge: Challenge;
   length: number;
   isPreviousChallengeCompleting: boolean | undefined;
+  setCompleted: (value: boolean) => void;
 }) => {
-  const {
-    lastLanguageCode,
-    lessonId,
-    currentChallengeIndex,
-    setCurrentChallengeIndex,
-  } = clientStore();
-
-  const queryClient = useQueryClient();
+  const { currentChallengeIndex, setCurrentChallengeIndex } = clientStore();
 
   const [selected, setSelected] = useState("");
   const [answerState, setAnswerState] = useState<
     undefined | "correct" | "incorrect"
   >();
-
-  const { mutate: increaseLessonIndex } = useMutation({
-    mutationKey: ["current-user-courses"],
-    mutationFn: async () => {
-      await increaseLessonProgress(lessonId, lastLanguageCode);
-    },
-    onSuccess: () => {
-      queryClient.removeQueries({
-        queryKey: ["current-user-courses"],
-      });
-    },
-  });
 
   const { data: user } = useQuery<User>({
     queryKey: ["user"],
@@ -72,9 +54,7 @@ export const SelectChallenge = ({
   const correctAnswerDispatch = () => {
     setCurrentChallengeIndex(currentChallengeIndex + 1);
     if (currentChallengeIndex + 1 === length) {
-      if (!isPreviousChallengeCompleting) {
-        increaseLessonIndex();
-      }
+      setCompleted(true);
     }
   };
 
@@ -85,7 +65,12 @@ export const SelectChallenge = ({
     if (answerState == "correct") {
       correctAnswerDispatch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [answerState, refetch]);
+
+  useEffect(() => {
+    setAnswerState(undefined);
+  }, [selected]);
 
   if (challenge.type !== ChallengeType.SELECT || challenge.Select.length == 0) {
     return null;
@@ -128,6 +113,9 @@ export const SelectChallenge = ({
               "h-12",
               option === selected &&
                 "border-green-300 bg-green-400/20 hover:bg-green-400/20 text-green-400",
+              answerState == "incorrect" &&
+                option === selected &&
+                "bg-red-400/20 text-red-400 hover:bg-red-400/20 border-red-300",
             )}
             key={index}
           >

@@ -3,7 +3,9 @@
 import { verifySession } from "@/lib/session-helper";
 import { PrismaClient } from "@prisma/client";
 
-const db = new PrismaClient();
+const db = new PrismaClient({
+  log: ["error", "info", "warn"],
+});
 
 const getCourseByCode = async (code: string) => {
   return await db.language.findUnique({
@@ -112,13 +114,39 @@ const getFirstLessonFromNextUnit = async (unitId: number) => {
   });
 };
 
+const increaseHeart = async () => {
+  const session = await verifySession();
+
+  await db.user.update({
+    where: {
+      id: session.data.id,
+    },
+    data: {
+      hearts: {
+        increment: 1,
+      },
+    },
+  });
+};
+
 const increaseLessonProgress = async (
   lessonId: number,
   languageCode: string,
 ) => {
   const session = await verifySession();
 
-  const incrementHearts = session.data.hearts >= 5 ? 0 : 1;
+  const hearts = await db.user.findUniqueOrThrow({
+    where: {
+      id: session.data.id,
+    },
+    select: {
+      hearts: true,
+    },
+  });
+
+  if (hearts.hearts <= 1) {
+    increaseHeart();
+  }
 
   const lesson = await db.lesson.findFirst({
     where: {
@@ -165,17 +193,6 @@ const increaseLessonProgress = async (
       },
     });
   }
-
-  await db.user.update({
-    where: {
-      id: session.data.id,
-    },
-    data: {
-      hearts: {
-        increment: incrementHearts,
-      },
-    },
-  });
 };
 
 export {
@@ -185,4 +202,5 @@ export {
   getLessons,
   getLesson,
   increaseLessonProgress,
+  increaseHeart,
 };

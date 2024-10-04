@@ -4,6 +4,8 @@ import { Crown, Star } from "lucide-react";
 import { clientStore } from "@/store/user-store";
 import { useRouter } from "next/navigation";
 import { lessonCycle } from "@/lib/determine-lesson-cycle";
+import { useQuery } from "@tanstack/react-query";
+import { User } from "@prisma/client";
 
 export const LessonComponent = ({
   isCurrentLesson,
@@ -28,6 +30,10 @@ export const LessonComponent = ({
 
   const { setLessonId, setPreviousChallengeCompleting } = clientStore();
   const router = useRouter();
+
+  const { data: user } = useQuery<User>({
+    queryKey: ["user"],
+  });
 
   const BounceComponent = () => {
     if (isCurrentLesson) {
@@ -68,7 +74,11 @@ export const LessonComponent = ({
           setLessonId(id);
           router.push("/lesson");
         }}
-        disabled={isUnitLocked || !isLessonAvailable}
+        disabled={
+          isUnitLocked ||
+          !isLessonAvailable ||
+          (isCurrentLesson && user && user.hearts <= 0)
+        }
         variant="primary"
         className={cn(
           "w-20 h-20 rounded-full relative border-b-[10px] hover:border-b-[8px]",

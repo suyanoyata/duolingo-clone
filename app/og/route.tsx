@@ -1,10 +1,20 @@
 import { getCourseByCode } from "@/actions/courses/courses.edge-action";
 import { NextRequest } from "next/server";
 import { ImageResponse } from "@vercel/og";
+import { headers as NextHeaders } from "next/headers";
 
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
+  const Stats = ({ count, label }: { count: number; label: string }) => (
+    <div tw="flex flex-col items-center mr-5">
+      <span style={{ fontFamily: "Nunito Black" }} tw="text-4xl text-zinc-800">
+        {count}
+      </span>
+      <span tw="text-zinc-400">{label}</span>
+    </div>
+  );
+
   const bold = await fetch(
     new URL("../../public/fonts/Nunito-Bold.ttf", import.meta.url),
   );
@@ -15,6 +25,14 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
 
   const course = await getCourseByCode(params.get("code") || "");
+
+  const headers = NextHeaders();
+  const origin =
+    process.env.NODE_ENV == "production"
+      ? `https://${headers.get("host")}`
+      : `http://${headers.get("host")}`;
+
+  const imageSize = 82;
 
   return new ImageResponse(
     (
@@ -57,10 +75,20 @@ export async function GET(req: NextRequest) {
           style={{
             fontFamily: "Nunito Bold",
           }}
-          tw="flex items-center justify-center rounded-xl font-bold bg-sky-400 text-white uppercase border-sky-500 border-b-4 h-15 mt-4 max-w-[240px]"
+          tw="flex text-xl items-center justify-center rounded-2xl font-bold bg-sky-400 text-white uppercase border-sky-500 border-b-[6px] h-15 mt-4 max-w-[290px]"
         >
           Почати
         </div>
+        <div tw="flex flex-row mt-5">
+          <Stats count={course.units} label="розділів" />
+          <Stats count={course.lessons} label="уроків" />
+        </div>
+        <img
+          tw="absolute right-4 top-4 rounded-xl"
+          width={imageSize}
+          height={imageSize / 1.3333}
+          src={`${origin}/flags/${course.code}.svg`}
+        />
       </div>
     ),
     {

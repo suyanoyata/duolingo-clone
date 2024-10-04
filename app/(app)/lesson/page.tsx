@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { LessonHeader } from "@/components/units/lesson-header";
 import { AnimatePresence } from "framer-motion";
 import { LessonComplete } from "@/components/units/lesson-complete-component";
+import { useEffect, useState } from "react";
+import { NoHeartsLeftModal } from "@/components/units/no-hearts-left-modal";
 
 export default function Page() {
   const { lessonId, isPreviousChallengeCompleting } = clientStore();
@@ -20,10 +22,23 @@ export default function Page() {
     queryKey: ["user"],
   });
 
+  const [localUser, setLocalUser] = useState<User | null>(null);
+
+  const [completed, setCompleted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
   const { data, isPending } = useQuery({
     queryKey: ["lesson", lessonId],
     queryFn: async () => await getLesson(lessonId),
   });
+
+  useEffect(() => {
+    if (localUser && localUser.hearts !== 0 && user!.hearts == 0) {
+      setShowModal(true);
+    }
+
+    setLocalUser(user!);
+  }, [user, localUser]);
 
   if (lessonId == 0) {
     if (typeof window != "undefined") {
@@ -39,9 +54,11 @@ export default function Page() {
   return (
     <main className="max-w-[700px] mx-auto p-2">
       <LessonHeader length={data.length} user={user} />
+      <NoHeartsLeftModal open={showModal} setOpen={setShowModal} />
       <AnimatePresence>
         {data.map((challenge, index) => (
           <SelectChallenge
+            setCompleted={setCompleted}
             isPreviousChallengeCompleting={isPreviousChallengeCompleting}
             index={index}
             length={data.length}
@@ -49,7 +66,11 @@ export default function Page() {
             challenge={challenge}
           />
         ))}
-        <LessonComplete challengeLength={data.length} />
+        <LessonComplete
+          isPreviousChallengeCompleting={isPreviousChallengeCompleting!}
+          completed={completed}
+          challengeLength={data.length}
+        />
       </AnimatePresence>
     </main>
   );

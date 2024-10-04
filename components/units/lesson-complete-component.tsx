@@ -2,19 +2,27 @@ import { clientStore } from "@/store/user-store";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { ButtonTitle } from "../title-button";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import ReactConfetti from "react-confetti";
 import { useWindowDimensions } from "@/hooks/useWindowDimensions";
+import {
+  increaseHeart,
+  increaseLessonProgress,
+} from "@/actions/courses/courses.action";
 
 export const LessonComplete = ({
   challengeLength,
+  completed,
+  isPreviousChallengeCompleting,
 }: {
   challengeLength: number;
+  completed: boolean;
+  isPreviousChallengeCompleting: boolean;
 }) => {
-  const { currentChallengeIndex, lastLanguageCode } = clientStore();
+  const { currentChallengeIndex, lastLanguageCode, lessonId } = clientStore();
 
   const { data: user, refetch } = useQuery<User>({
     queryKey: ["user"],
@@ -31,7 +39,29 @@ export const LessonComplete = ({
       });
       refetch();
     }
-  }, [currentChallengeIndex]);
+  }, [currentChallengeIndex, challengeLength, queryClient, refetch, user]);
+
+  const { mutate: increaseLessonIndex } = useMutation({
+    mutationKey: ["current-user-courses"],
+    mutationFn: async () => {
+      await increaseLessonProgress(lessonId, lastLanguageCode);
+    },
+    onSuccess: () => {
+      queryClient.removeQueries({
+        queryKey: ["current-user-courses"],
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (completed) {
+      if (!isPreviousChallengeCompleting) {
+        increaseLessonIndex();
+      } else {
+        increaseHeart();
+      }
+    }
+  }, [completed, increaseLessonIndex, isPreviousChallengeCompleting]);
 
   const router = useRouter();
 
@@ -59,10 +89,19 @@ export const LessonComplete = ({
           Ви пройшли урок
         </h1>
         <div className="flex flex-wrap gap-2 justify-center">
-          <ButtonTitle title="Отримано балів">+15</ButtonTitle>
-          <ButtonTitle variant="hearts" title="Залишилось сердець">
-            {user!.hearts}
+          <ButtonTitle title="Отримано балів">
+            {isPreviousChallengeCompleting ? "+0" : "+15"}
           </ButtonTitle>
+          {!isPreviousChallengeCompleting && (
+            <ButtonTitle variant="hearts" title="Залишилось сердець">
+              {user!.hearts}
+            </ButtonTitle>
+          )}
+          {isPreviousChallengeCompleting && (
+            <ButtonTitle variant="hearts" title="Отримано сердець">
+              +1
+            </ButtonTitle>
+          )}
         </div>
         <Button
           onClick={() => {
