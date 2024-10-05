@@ -1,20 +1,22 @@
 import { Button as ShadButton } from "@/components/ui/button";
+import { AnimationConfig } from "@/constants/animation-config";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+import { SentenceWord } from "@/types/Game";
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 
-export const WordPicker = (props: {
-  words: never[];
-  animationConfig: never;
-  setWords: (words: never[]) => void;
-  setSentence: Dispatch<SetStateAction<never[]>>;
+export const SentenceWordPicker = (props: {
+  words: SentenceWord[];
+  setWords: (words: SentenceWord[]) => void;
+  setSentence: Dispatch<SetStateAction<SentenceWord[]>>;
+  animationConfig: AnimationConfig;
 }) => {
   const { words, animationConfig, setWords, setSentence } = props;
   const Button = motion.create(ShadButton);
 
   const { setWord } = useTextToSpeech(words);
 
-  const addWordToSentence = (word: never) => {
+  const addWordToSentence = (word: SentenceWord) => {
     const newWords = [...words];
     newWords[word.id].isAvailable = false;
     setWords(newWords);
@@ -23,7 +25,7 @@ export const WordPicker = (props: {
   };
 
   return (
-    <div className="flex gap-3 mt-5 flex-wrap">
+    <div className="flex gap-3 mt-5 flex-wrap mb-2">
       {words.map((word) => (
         <div key={word.id} className="relative">
           {word.isAvailable && (

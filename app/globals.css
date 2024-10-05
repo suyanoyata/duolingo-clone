@@ -82,3 +82,6 @@
     @apply bg-background text-foreground;
   }
 }
+/* *, *::before, *::after {
+  outline: 1px dotted green;
+} */

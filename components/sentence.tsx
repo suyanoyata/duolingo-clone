@@ -1,6 +1,6 @@
 import { Button as ShadButton } from "@/components/ui/button";
+import { AnimationConfig } from "@/constants/animation-config";
 import { cn } from "@/lib/utils";
-import { SentenceFramerAnimationConfig } from "@/types/framer/sentence-animation-config";
 import { SentenceWord } from "@/types/Game";
 import { motion, Reorder } from "framer-motion";
 import { Dispatch, SetStateAction, useRef } from "react";
@@ -10,7 +10,7 @@ export const Sentence = (props: {
   setWords: (words: SentenceWord[]) => void;
   setSentence: Dispatch<SetStateAction<SentenceWord[]>>;
   sentence: SentenceWord[];
-  animationConfig: SentenceFramerAnimationConfig;
+  animationConfig: AnimationConfig;
 }) => {
   const Button = motion.create(ShadButton);
   const { sentence, setSentence, words, setWords, animationConfig } = props;
@@ -26,9 +26,9 @@ export const Sentence = (props: {
 
   return (
     <div className="h-[200px] relative z-20" ref={limits}>
-      <div className="absolute top-[44px] left-0 w-full bg-slate-200 h-[2px]"></div>
-      <div className="absolute top-[94px] left-0 w-full bg-slate-200 h-[2px]"></div>
-      <div className="absolute top-[144px] left-0 w-full bg-slate-200 h-[2px]"></div>
+      <div className="absolute top-[48px] left-0 w-full bg-slate-200 h-[2px]"></div>
+      <div className="absolute top-[102px] left-0 w-full bg-slate-200 h-[2px]"></div>
+      <div className="absolute top-[156px] left-0 w-full bg-slate-200 h-[2px]"></div>
       <Reorder.Group
         onReorder={setSentence}
         values={sentence}
@@ -42,7 +42,7 @@ export const Sentence = (props: {
         className={cn(
           "flex gap-[10px] content-start",
           "h-[200px]",
-          // "flex-wrap",
+          "flex-wrap",
         )}
       >
         {sentence.map((word) => (

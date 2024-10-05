@@ -12,6 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import { LessonComplete } from "@/components/units/lesson-complete-component";
 import { useEffect, useState } from "react";
 import { NoHeartsLeftModal } from "@/components/units/no-hearts-left-modal";
+import { SentenceChallenge } from "@/components/units/sentence-challenge-component";
 
 export default function Page() {
   const { lessonId, isPreviousChallengeCompleting } = clientStore();
@@ -57,14 +58,23 @@ export default function Page() {
       <NoHeartsLeftModal open={showModal} setOpen={setShowModal} />
       <AnimatePresence>
         {data.map((challenge, index) => (
-          <SelectChallenge
-            setCompleted={setCompleted}
-            isPreviousChallengeCompleting={isPreviousChallengeCompleting}
-            index={index}
-            length={data.length}
-            key={challenge.id}
-            challenge={challenge}
-          />
+          <>
+            <SelectChallenge
+              setCompleted={setCompleted}
+              isPreviousChallengeCompleting={isPreviousChallengeCompleting}
+              index={index}
+              length={data.length}
+              key={challenge.id}
+              challenge={challenge}
+            />
+            <SentenceChallenge
+              length={length}
+              key={challenge.id}
+              setCompleted={setCompleted}
+              challenge={challenge}
+              index={index}
+            />
+          </>
         ))}
         <LessonComplete
           isPreviousChallengeCompleting={isPreviousChallengeCompleting!}

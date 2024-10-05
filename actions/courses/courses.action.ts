@@ -66,6 +66,7 @@ const getLesson = async (lessonId: number) => {
       lessonId: true,
       type: true,
       Select: true,
+      Sentence: true,
     },
     where: {
       lessonId,

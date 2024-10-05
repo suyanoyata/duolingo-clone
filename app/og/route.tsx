@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { getCourseByCode } from "@/actions/courses/courses.edge-action";
 import { NextRequest } from "next/server";
 import { ImageResponse } from "@vercel/og";
@@ -84,6 +85,7 @@ export async function GET(req: NextRequest) {
           <Stats count={course.lessons} label="уроків" />
         </div>
         <img
+          alt=""
           tw="absolute right-4 top-4 rounded-xl"
           width={imageSize}
           height={imageSize / 1.3333}

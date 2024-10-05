@@ -1,4 +1,4 @@
-import { ChallengeType, User } from "@prisma/client";
+import { ChallengeType, Select, Sentence, User } from "@prisma/client";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -11,16 +11,9 @@ type Challenge = {
   id: number;
   order: number;
   lessonId: number;
-  type: "SELECT";
-  Select: SelectChallenge[];
-};
-
-type SelectChallenge = {
-  id: number;
-  challengeId: number;
-  question: string;
-  options: string[];
-  answer: string;
+  type: "SELECT" | "SENTENCE";
+  Select: Select[];
+  Sentence: Sentence[];
 };
 
 export const SelectChallenge = ({
