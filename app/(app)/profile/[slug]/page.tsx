@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   } = useQuery({
     queryKey: ["profile", params.slug],
     queryFn: async () => {
-      if (data!.name !== params.slug) {
+      if (data!.nickname !== params.slug) {
         return await getUser(params.slug);
       } else {
         return data;

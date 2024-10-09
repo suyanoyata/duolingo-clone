@@ -35,7 +35,7 @@ export const Sidebar = () => {
             <GraduationCap />
             Навчатись
           </SidebarLink>
-          <SidebarLink href={`/profile/${data.name}`}>
+          <SidebarLink href={`/profile/${data.nickname}`}>
             <User />
             Профіль
           </SidebarLink>
@@ -47,7 +47,7 @@ export const Sidebar = () => {
         </SidebarLink>
         <SidebarLink
           className="w-[44px] h-[44px]"
-          href={`/profile/${data.name}`}
+          href={`/profile/${data.nickname}`}
         >
           <User />
         </SidebarLink>

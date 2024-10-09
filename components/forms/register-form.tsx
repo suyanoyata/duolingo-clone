@@ -13,7 +13,6 @@ import { createUser } from "@/actions/users/user.action";
 import { LoadingCircle } from "../loading-overlay";
 import { useRouter } from "next/navigation";
 import { FieldError } from "../ui/field-error";
-import { useEffect } from "react";
 
 const fields = [
   {
@@ -48,24 +47,21 @@ export const RegisterForm = ({
 
   const router = useRouter();
 
-  const { mutate, isPending, error, isSuccess } = useMutation({
-    mutationKey: ["create-user"],
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationKey: ["create-user-form"],
     mutationFn: async (data: UserRegisterFormData) => {
       const user = await createUser(data);
-      router.push("/learn");
       return user;
     },
-  });
-
-  useEffect(() => {
-    if (error != null) {
+    onSuccess: () => router.push("/learn"),
+    onError: () => {
       setError("root", {
         message: "Не вдалось створити аккаунт",
       });
-    }
-  }, [error]);
+    },
+  });
 
-  const onSubmit = (data: UserRegisterFormData) => {
+  const onSubmit = async (data: UserRegisterFormData) => {
     mutate(data);
   };
 
@@ -126,7 +122,9 @@ export const RegisterForm = ({
                   ))}
                   <Button
                     disabled={isPending || isSuccess || !isDirty}
-                    type="submit"
+                    onClick={() => {
+                      handleSubmit(onSubmit);
+                    }}
                     variant="secondary"
                     className="mt-2"
                   >

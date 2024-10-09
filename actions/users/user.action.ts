@@ -1,6 +1,7 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
+import { faker } from "@faker-js/faker";
 import {
   clearSession,
   generateSession,
@@ -18,6 +19,10 @@ import bcrypt from "bcrypt";
 
 const db = new PrismaClient();
 
+const generateName = () => {
+  return `${faker.word.adverb()}-${faker.word.adjective()}-${faker.word.noun()}-${faker.number.int({ min: 1000, max: 9999 })}`;
+};
+
 const createUser = async (user: UserRegisterFormData) => {
   const createUser = UserRegisterSchema.parse(user);
 
@@ -31,10 +36,34 @@ const createUser = async (user: UserRegisterFormData) => {
     throw new Error("User already exists");
   }
 
+  let attempts = 0;
+
+  while (attempts < 10) {
+    const nickname = generateName();
+
+    const exists = await db.user.findFirst({
+      where: {
+        nickname,
+      },
+    });
+
+    if (!exists) {
+      createUser.nickname = nickname;
+      break;
+    }
+
+    attempts++;
+  }
+
+  if (attempts == 10) {
+    throw new Error("Something went wrong");
+  }
+
   const create = await db.user.create({
     data: {
       name: createUser.name,
       email: createUser.email,
+      nickname: createUser.nickname,
       password: await hashPassword(createUser.password),
       hearts: 5,
       experience: 0,
@@ -201,14 +230,15 @@ const getCurrentUserCourses = async (userId?: number) => {
   return courses;
 };
 
-const getUser = async (name: string) => {
+const getUser = async (nickname: string) => {
   const user = await db.user.findFirst({
     where: {
-      name,
+      nickname,
     },
     select: {
       id: true,
       name: true,
+      nickname: true,
       score: true,
       joinedAt: true,
       progressId: true,
@@ -281,6 +311,7 @@ const reduceHearts = async () => {
 
 export {
   createUser,
+  generateName,
   getCurrentUser,
   getUser,
   loginUser,

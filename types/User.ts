@@ -17,12 +17,14 @@ export const UserRegisterSchema = z
         message: "Імʼя занадто коротке",
       })
       .max(32),
+    nickname: z.string().optional().default(""),
   })
   .extend(UserLoginSchema.shape);
 
 export const User = z.object({
   id: z.number(),
   email: z.string(),
+  nickname: z.string(),
   name: z.string(),
   hearts: z.number(),
   experience: z.number(),

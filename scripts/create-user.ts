@@ -1,29 +1,33 @@
-import { createUser } from "@/actions/users/user.action";
+import { generateName } from "@/actions/users/user.action";
 
-function getFlag(flag: string, error: string): string {
-  let value = "";
-  process.argv.forEach(function (val, index) {
-    if (val == flag) {
-      if (process.argv[index + 1] == undefined) {
-        throw error;
-      }
-      value = process.argv[index + 1];
-    }
-  });
+console.log(generateName());
 
-  if (value == "") {
-    throw error;
-  }
+// import { createUser } from "@/actions/users/user.action";
 
-  return value;
-}
+// function getFlag(flag: string, error: string): string {
+//   let value = "";
+//   process.argv.forEach(function (val, index) {
+//     if (val == flag) {
+//       if (process.argv[index + 1] == undefined) {
+//         throw error;
+//       }
+//       value = process.argv[index + 1];
+//     }
+//   });
 
-const email = getFlag("-e", "Email is required (-e)");
-const password = getFlag("-p", "Password is required (-p)");
-const name = getFlag("-n", "Name is required (-n)");
+//   if (value == "") {
+//     throw error;
+//   }
 
-await createUser({
-  email,
-  password,
-  name,
-});
+//   return value;
+// }
+
+// const email = getFlag("-e", "Email is required (-e)");
+// const password = getFlag("-p", "Password is required (-p)");
+// const name = getFlag("-n", "Name is required (-n)");
+
+// await createUser({
+//   email,
+//   password,
+//   name,
+// });

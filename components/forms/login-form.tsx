@@ -46,26 +46,23 @@ export const LoginForm = ({
 
   const router = useRouter();
 
-  const { mutate, isPending, error, isSuccess } = useMutation({
+  const { mutate, isPending, isSuccess } = useMutation({
     mutationKey: ["login-user"],
     mutationFn: async (data: UserLoginFormData) => {
       const user = await loginUser(data);
-      router.push("/learn");
       return user;
+    },
+    onSuccess: () => router.push("/learn"),
+    onError: () => {
+      setError("root", {
+        message: "Не вдалось увійти в аккаунт",
+      });
     },
   });
 
   const onSubmit = (data: UserLoginFormData) => {
     mutate(data);
   };
-
-  useEffect(() => {
-    if (error != null) {
-      setError("root", {
-        message: "Не вдалось увійти в аккаунт",
-      });
-    }
-  }, [error]);
 
   return (
     <div>
