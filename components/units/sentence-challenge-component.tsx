@@ -3,19 +3,23 @@ import { Challenge, ChallengeType, Sentence, User } from "@prisma/client";
 import { LayoutGroup, motion } from "framer-motion";
 import { Sentence as SentenceChallengeComponent } from "../sentence";
 import { useEffect, useState } from "react";
-import { SentenceWord } from "@/types/Game";
+import { GameLesson, SentenceWord } from "@/types/Game";
 import { SentenceWordPicker } from "../sentence-word-picker";
 import { animationConfig } from "@/constants/animation-config";
 import { Button } from "../ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { reduceHearts } from "@/actions/users/user.action";
+import { useReduceHearts } from "@/hooks/useReduceHearts";
+import { useLessonEdit } from "@/hooks/useLessonEdit";
+import { compare } from "@/lib/utils";
 
 export const SentenceChallenge = ({
+  lessonId,
   challenge,
   index,
   length,
   setCompleted,
 }: {
+  lessonId: number;
   challenge: Challenge & {
     Sentence: Sentence[];
   };
@@ -28,14 +32,22 @@ export const SentenceChallenge = ({
     isPreviousChallengeCompleting,
     setCurrentChallengeIndex,
   } = clientStore();
-  const { data: user, refetch } = useQuery<User>({
+  const { data: user } = useQuery<User>({
     queryKey: ["user"],
   });
+
+  const { data: lesson } = useQuery<GameLesson[]>({
+    queryKey: ["lesson", lessonId],
+  });
+
   const [sentenceWords, setSentenceWords] = useState<SentenceWord[]>([]);
   const [userSentence, setUserSentence] = useState<SentenceWord[]>([]);
   const [answerState, setAnswerState] = useState<
     "correct" | "incorrect" | undefined
   >();
+
+  const { reduceUserHearts } = useReduceHearts();
+  const { editLesson } = useLessonEdit(lesson!, index, lessonId);
 
   useEffect(() => {
     if (challenge.type === ChallengeType.SENTENCE) {
@@ -50,18 +62,16 @@ export const SentenceChallenge = ({
   }, [challenge.type, challenge.Sentence]);
 
   useEffect(() => {
-    console.log(userSentence, userSentence.length);
-  }, [userSentence]);
-
-  useEffect(() => {
     setAnswerState(undefined);
   }, [userSentence]);
 
   const submitResult = () => {
-    const correct = challenge.Sentence[0].correct.join(" ");
-    const user = userSentence.map((word) => word.text).join(" ");
+    const correct = compare(
+      challenge.Sentence[0].correct,
+      userSentence.map((word) => word.text),
+    );
 
-    setAnswerState(correct === user ? "correct" : "incorrect");
+    setAnswerState(correct ? "correct" : "incorrect");
   };
 
   useEffect(() => {
@@ -73,9 +83,11 @@ export const SentenceChallenge = ({
     }
 
     if (answerState == "incorrect") {
-      reduceHearts().then(() => refetch());
+      editLesson();
+      reduceUserHearts();
     }
-  }, [answerState, length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answerState, length, isPreviousChallengeCompleting]);
 
   if (index !== currentChallengeIndex) return null;
   if (challenge.type !== ChallengeType.SENTENCE) return null;

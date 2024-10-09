@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { clientStore } from "@/store/user-store";
 import { useQuery } from "@tanstack/react-query";
-import { reduceHearts } from "@/actions/users/user.action";
 import { motion } from "framer-motion";
+import { GameLesson } from "@/types/Game";
+import { useLessonEdit } from "@/hooks/useLessonEdit";
+import { useReduceHearts } from "@/hooks/useReduceHearts";
 
 type Challenge = {
   id: number;
@@ -17,12 +19,14 @@ type Challenge = {
 };
 
 export const SelectChallenge = ({
+  lessonId,
   challenge,
   index,
   length,
   isPreviousChallengeCompleting,
   setCompleted,
 }: {
+  lessonId: number;
   index: number;
   challenge: Challenge;
   length: number;
@@ -30,6 +34,13 @@ export const SelectChallenge = ({
   setCompleted: (value: boolean) => void;
 }) => {
   const { currentChallengeIndex, setCurrentChallengeIndex } = clientStore();
+
+  const { data: lesson } = useQuery<GameLesson[]>({
+    queryKey: ["lesson", lessonId],
+  });
+
+  const { editLesson } = useLessonEdit(lesson!, index, lessonId);
+  const { reduceUserHearts } = useReduceHearts();
 
   const [selected, setSelected] = useState("");
   const [answerState, setAnswerState] = useState<
@@ -53,7 +64,8 @@ export const SelectChallenge = ({
 
   useEffect(() => {
     if (answerState == "incorrect") {
-      reduceHearts().then(() => refetch());
+      editLesson();
+      reduceUserHearts();
     }
     if (answerState == "correct") {
       correctAnswerDispatch();

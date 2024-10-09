@@ -2,7 +2,7 @@ import { SentenceWord } from "@/types/Game";
 import { useEffect, useRef, useState } from "react";
 
 export const useTextToSpeech = (words: SentenceWord[]) => {
-  const sentenceWords = words.map((word) => word.text);
+  const sentenceWords = words.map((word) => word.text.toLowerCase());
   const [word, setWord] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCache = useRef<Map<string, HTMLAudioElement>>(new Map());

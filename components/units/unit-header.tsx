@@ -21,7 +21,7 @@ export const UnitComponent = ({ unit }: { unit: Unit }) => {
         <h2 className="text-xl font-extrabold text-white">{unit.name}</h2>
         <p className="text-sm text-white font-medium">{unit.description}</p>
       </div>
-      <LessonList lessons={data} />
+      <LessonList languageCode={unit.languageCode} lessons={data} />
     </section>
   );
 };

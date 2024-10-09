@@ -139,7 +139,7 @@ const subscribeToCourse = async (code: string, courseId: number) => {
     },
   });
 
-  if (!course) {
+  if (!course || course.Lesson.length == 0) {
     throw new Error("Something went wrong");
   }
 
@@ -183,12 +183,18 @@ const setActiveCourse = async (code: string) => {
   return user;
 };
 
-const getCurrentUserCourses = async () => {
+const getCurrentUserCourses = async (userId?: number) => {
   const session = await verifySession();
 
   const courses = await db.progress.findMany({
     where: {
-      userId: session.data.id,
+      userId: userId ?? session.data.id,
+    },
+    orderBy: {
+      score: "desc",
+    },
+    include: {
+      language: true,
     },
   });
 

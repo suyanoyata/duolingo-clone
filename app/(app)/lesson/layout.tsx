@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Fluenty",
-  description: "Learn languages with ease",
+  description: "Тренуйте мову із легкістю",
 };
 
 export default function Layout({

@@ -60,19 +60,21 @@ export default function Page() {
         {data.map((challenge, index) => (
           <>
             <SelectChallenge
+              lessonId={lessonId}
               setCompleted={setCompleted}
               isPreviousChallengeCompleting={isPreviousChallengeCompleting}
               index={index}
               length={data.length}
-              key={challenge.id}
+              key={index}
               challenge={challenge}
             />
             <SentenceChallenge
-              length={length}
-              key={challenge.id}
+              lessonId={lessonId}
               setCompleted={setCompleted}
-              challenge={challenge}
               index={index}
+              length={length}
+              key={index}
+              challenge={challenge}
             />
           </>
         ))}

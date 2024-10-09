@@ -1,13 +1,14 @@
 "use client";
 
 import { getCourse } from "@/actions/courses/courses.action";
-import { getUser } from "@/actions/users/user.action";
+import { getCurrentUserCourses, getUser } from "@/actions/users/user.action";
 import { CountryFlag } from "@/components/country-flag";
 import { LoadingOverlay } from "@/components/loading-overlay";
 import { Logout } from "@/components/logout-button";
 import { localDate } from "@/lib/date";
 import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -17,6 +18,11 @@ export default function Page({ params }: { params: { slug: string } }) {
   });
 
   const router = useRouter();
+
+  const { data: coursesData, isPending: isCoursesPending } = useQuery({
+    queryKey: ["profile-courses", params.slug],
+    queryFn: async () => await getCurrentUserCourses(data?.id),
+  });
 
   const {
     data: profileData,
@@ -50,13 +56,17 @@ export default function Page({ params }: { params: { slug: string } }) {
     return <LoadingOverlay />;
   }
 
-  if (isProfilePending || !profileData || isCourseDataPending) {
+  if (
+    isProfilePending ||
+    !profileData ||
+    isCourseDataPending ||
+    isCoursesPending
+  ) {
     return <LoadingOverlay />;
   }
 
   if (profileData.id == 0) {
-    router.push("/not-found");
-    return null;
+    router.push("/not-found") as unknown as React.ReactNode;
   }
 
   return (
@@ -87,10 +97,28 @@ export default function Page({ params }: { params: { slug: string } }) {
         </div>
         {data!.id === profileData.id && <Logout />}
       </section>
-      <aside className="w-[240px] h-screen bg-zinc-100 flex items-center justify-center rounded-lg max-lg:hidden">
-        <h2 className="text-zinc-400 font-medium text-xs">
-          achievements widget
-        </h2>
+      <aside className="w-[240px] border-2 border-zinc-100 flex flex-col p-4 rounded-xl max-lg:hidden">
+        {coursesData!.map((course) => (
+          <div
+            key={course.id}
+            className="flex flex-row gap-2 items-center h-16"
+          >
+            <Image
+              alt=""
+              className="shadow-sm rounded-sm h-[20px] w-[28px]"
+              src={`/flags/${course.languageCode}.svg`}
+              width={28}
+              height={22}
+            />
+            <div>
+              <p className="font-bold">{course.language.name} мова</p>
+              <p className="text-sm text-zinc-600 font-semibold">
+                Кількість балів:{" "}
+                <span className="font-bold text-zinc-700">{course.score}</span>
+              </p>
+            </div>
+          </div>
+        ))}
       </aside>
     </div>
   );
