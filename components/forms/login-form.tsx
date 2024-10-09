@@ -13,7 +13,6 @@ import { loginUser } from "@/actions/users/user.action";
 import { LoadingCircle } from "../loading-overlay";
 import { useRouter } from "next/navigation";
 import { FieldError } from "../ui/field-error";
-import { useEffect } from "react";
 
 const fields = [
   {
