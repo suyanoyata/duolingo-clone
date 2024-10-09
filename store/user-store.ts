@@ -14,9 +14,9 @@ interface UserStore {
 }
 
 export const clientStore = create<UserStore>((set) => ({
-  lessonId: 1,
+  lessonId: 0,
   currentChallengeIndex: 0,
-  isPreviousChallengeCompleting: true,
+  isPreviousChallengeCompleting: undefined,
   lastLanguageCode: "",
   setLessonId: (lessonId: number) => set({ lessonId }),
   setPreviousChallengeCompleting: (isPreviousChallengeCompleting: boolean) =>

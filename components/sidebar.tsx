@@ -5,7 +5,7 @@ import { SidebarLink } from "./sidebar-link";
 import { getCurrentUser } from "@/actions/users/user.action";
 import { LoadingOverlay } from "./loading-overlay";
 import { useRouter } from "next/navigation";
-import { GraduationCap, User } from "lucide-react";
+import { GraduationCap, Settings, User } from "lucide-react";
 
 export const Sidebar = () => {
   const { data, isPending } = useQuery({
@@ -34,6 +34,12 @@ export const Sidebar = () => {
           <SidebarLink href="/learn">
             <GraduationCap />
             Навчатись
+          </SidebarLink>
+        </div>
+        <div className="mt-auto space-y-2">
+          <SidebarLink href="/settings">
+            <Settings />
+            Налаштування
           </SidebarLink>
           <SidebarLink href={`/profile/${data.nickname}`}>
             <User />

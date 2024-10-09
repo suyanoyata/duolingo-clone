@@ -118,13 +118,24 @@ const getFirstLessonFromNextUnit = async (unitId: number) => {
 const increaseHeart = async () => {
   const session = await verifySession();
 
+  const hearts = await db.user
+    .findUniqueOrThrow({
+      where: {
+        id: session.data.id,
+      },
+      select: {
+        hearts: true,
+      },
+    })
+    .then((user) => user.hearts);
+
   await db.user.update({
     where: {
       id: session.data.id,
     },
     data: {
       hearts: {
-        increment: 1,
+        increment: hearts < 5 ? 1 : 0,
       },
     },
   });

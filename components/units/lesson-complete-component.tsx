@@ -39,7 +39,7 @@ export const LessonComplete = ({
       });
       refetch();
     }
-  }, [currentChallengeIndex, challengeLength, queryClient, refetch, user]);
+  }, [currentChallengeIndex, challengeLength, refetch]);
 
   const { mutate: increaseLessonIndex } = useMutation({
     mutationKey: ["current-user-courses"],
@@ -54,13 +54,11 @@ export const LessonComplete = ({
   });
 
   useEffect(() => {
-    if (completed) {
-      if (!isPreviousChallengeCompleting) {
-        increaseLessonIndex();
-      } else {
-        increaseHeart();
-      }
+    if (!completed) return;
+    if (!isPreviousChallengeCompleting) {
+      increaseLessonIndex();
     }
+    increaseHeart();
   }, [completed, increaseLessonIndex, isPreviousChallengeCompleting]);
 
   const router = useRouter();
