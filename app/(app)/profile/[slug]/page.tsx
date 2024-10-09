@@ -19,15 +19,10 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   const router = useRouter();
 
-  const { data: coursesData, isPending: isCoursesPending } = useQuery({
-    queryKey: ["profile-courses", params.slug],
-    queryFn: async () => await getCurrentUserCourses(data?.id),
-  });
-
   const {
     data: profileData,
     isPending: isProfilePending,
-    refetch,
+    refetch: refetchProfile,
   } = useQuery({
     queryKey: ["profile", params.slug],
     queryFn: async () => {
@@ -41,6 +36,11 @@ export default function Page({ params }: { params: { slug: string } }) {
     staleTime: 1000 * 60 * 2,
   });
 
+  const { data: coursesData, isPending: isCoursesPending } = useQuery({
+    queryKey: ["profile-courses", profileData?.id],
+    queryFn: async () => await getCurrentUserCourses(profileData?.id),
+  });
+
   const { data: courseData, isPending: isCourseDataPending } = useQuery({
     queryKey: ["profile-active-course", profileData?.progressId],
     queryFn: async () => await getCourse(profileData?.progressId),
@@ -48,9 +48,9 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     if (data?.id != undefined) {
-      refetch();
+      refetchProfile();
     }
-  }, [data, refetch]);
+  }, [data, refetchProfile]);
 
   if (isPending) {
     return <LoadingOverlay />;
@@ -66,7 +66,8 @@ export default function Page({ params }: { params: { slug: string } }) {
   }
 
   if (profileData.id == 0) {
-    router.push("/not-found") as unknown as React.ReactNode;
+    router.push("/not-found");
+    return <LoadingOverlay />;
   }
 
   return (
