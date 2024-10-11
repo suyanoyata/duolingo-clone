@@ -15,7 +15,7 @@ export const SidebarLink = ({
   href: string;
 }) => {
   const pathname = usePathname();
-  const isFocused = pathname === href;
+  const isFocused = pathname.startsWith(href);
 
   return (
     <Button
@@ -23,7 +23,8 @@ export const SidebarLink = ({
       variant="ghost"
       className={cn(
         "justify-start text-base flex gap-2",
-        isFocused && "bg-sky-50 outline outline-2 outline-sky-200 text-sky-500",
+        isFocused &&
+          "bg-sky-50 outline outline-2 outline-sky-200 text-sky-500 max-sm:outline-none max-sm:bg-transparent",
         className,
       )}
     >

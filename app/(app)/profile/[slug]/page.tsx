@@ -69,7 +69,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <div className="flex flex-row flex-1 p-2 px-12 gap-6">
+    <div className="flex flex-row flex-1 p-2 max-sm:px-4 px-12 gap-6">
       <ProfileMainSection courseData={courseData!} profileData={profileData} />
       <aside className="w-[240px] border-2 border-zinc-100 flex flex-col p-4 rounded-xl max-lg:hidden">
         {coursesData!.map((course) => (

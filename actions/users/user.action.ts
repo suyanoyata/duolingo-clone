@@ -250,6 +250,7 @@ const getUser = async (nickname: string) => {
       id: 0,
       name: "",
       score: 0,
+      nickname: "",
       joinedAt: new Date(),
       progressId: 0,
     };
@@ -309,6 +310,41 @@ const reduceHearts = async () => {
   });
 };
 
+const nicknameExists = async (nickname: string) => {
+  const exists = await db.user.findFirst({
+    where: {
+      nickname,
+    },
+  });
+
+  return !!exists;
+};
+
+const changeNickname = async (nickname: string) => {
+  const session = await verifySession();
+
+  const exists = await db.user.findFirst({
+    where: {
+      nickname,
+    },
+  });
+
+  if (exists) {
+    throw new Error("Nickname is taken");
+  }
+
+  await db.user.update({
+    where: {
+      id: session.data.id,
+    },
+    data: {
+      nickname,
+    },
+  });
+
+  return await getCurrentUser();
+};
+
 export {
   createUser,
   generateName,
@@ -319,4 +355,6 @@ export {
   getCurrentUserCourses,
   setActiveCourse,
   reduceHearts,
+  nicknameExists,
+  changeNickname,
 };

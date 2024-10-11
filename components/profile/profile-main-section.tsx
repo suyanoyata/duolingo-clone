@@ -11,6 +11,7 @@ export const ProfileMainSection = ({
     name: string;
     joinedAt: Date;
     score: number;
+    nickname: string;
   };
   courseData: Language;
 }) => {
@@ -21,6 +22,9 @@ export const ProfileMainSection = ({
           <h1 className="text-3xl font-extrabold text-zinc-700">
             {profileData.name}
           </h1>
+          <p className="text-base font-bold text-zinc-600">
+            {profileData.nickname}
+          </p>
           <p className="text-zinc-600">
             Приєднався: {localDate(profileData.joinedAt)}
           </p>
