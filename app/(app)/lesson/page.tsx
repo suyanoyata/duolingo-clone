@@ -13,6 +13,7 @@ import { LessonComplete } from "@/components/units/lesson-complete-component";
 import { useEffect, useState } from "react";
 import { NoHeartsLeftModal } from "@/components/units/no-hearts-left-modal";
 import { SentenceChallenge } from "@/components/units/sentence-challenge-component";
+import { SelectImageChallenge } from "@/components/units/select-image-challenge-component";
 
 export default function Page() {
   const { lessonId, isPreviousChallengeCompleting } = clientStore();
@@ -73,6 +74,15 @@ export default function Page() {
               setCompleted={setCompleted}
               index={index}
               length={length}
+              key={index}
+              challenge={challenge}
+            />
+            <SelectImageChallenge
+              lessonId={lessonId}
+              setCompleted={setCompleted}
+              isPreviousChallengeCompleting={isPreviousChallengeCompleting}
+              index={index}
+              length={data.length}
               key={index}
               challenge={challenge}
             />

@@ -67,6 +67,20 @@ const getLesson = async (lessonId: number) => {
       type: true,
       Select: true,
       Sentence: true,
+      SelectImage: {
+        select: {
+          id: true,
+          question: true,
+          correct: true,
+          challengeId: true,
+          words: {
+            select: {
+              image: true,
+              word: true,
+            },
+          },
+        },
+      },
     },
     where: {
       lessonId,

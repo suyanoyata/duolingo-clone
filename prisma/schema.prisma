@@ -67,13 +67,14 @@ model Lesson {
 }
 
 model Challenge {
-  id       Int           @id @default(autoincrement())
-  lesson   Lesson        @relation(fields: [lessonId], references: [id])
-  order    Int           @default(1)
-  lessonId Int
-  type     ChallengeType
-  Select   Select[]
-  Sentence Sentence[]
+  id          Int           @id @default(autoincrement())
+  lesson      Lesson        @relation(fields: [lessonId], references: [id])
+  order       Int           @default(1)
+  lessonId    Int
+  type        ChallengeType
+  Select      Select[]
+  Sentence    Sentence[]
+  SelectImage SelectImage[]
 }
 
 model Select {
@@ -94,7 +95,25 @@ model Sentence {
   challengeId Int?
 }
 
+model SelectImage {
+  id          Int                  @id @default(autoincrement())
+  question    String
+  words       SelectImageOptions[]
+  correct     String
+  challenge   Challenge?           @relation(fields: [challengeId], references: [id])
+  challengeId Int?
+}
+
+model SelectImageOptions {
+  id            Int          @id @default(autoincrement())
+  image         String
+  word          String
+  selectImage   SelectImage? @relation(fields: [selectImageId], references: [id])
+  selectImageId Int?
+}
+
 enum ChallengeType {
   SELECT
   SENTENCE
+  SELECT_IMAGE
 }

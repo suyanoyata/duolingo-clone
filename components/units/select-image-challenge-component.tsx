@@ -1,4 +1,4 @@
-import { Challenge, ChallengeType, Select, User } from "@prisma/client";
+import { Challenge, ChallengeType, SelectImage, User } from "@prisma/client";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -8,8 +8,9 @@ import { motion } from "framer-motion";
 import { GameLesson } from "@/types/Game";
 import { useLessonEdit } from "@/hooks/useLessonEdit";
 import { useReduceHearts } from "@/hooks/useReduceHearts";
+import Image from "next/image";
 
-export const SelectChallenge = ({
+export const SelectImageChallenge = ({
   lessonId,
   challenge,
   index,
@@ -20,7 +21,14 @@ export const SelectChallenge = ({
   lessonId: number;
   index: number;
   challenge: Challenge & {
-    Select: Select[];
+    SelectImage: {
+      question: string;
+      correct: string;
+      words: {
+        image: string;
+        word: string;
+      }[];
+    }[];
   };
   length: number;
   isPreviousChallengeCompleting: boolean | undefined;
@@ -70,14 +78,17 @@ export const SelectChallenge = ({
     setAnswerState(undefined);
   }, [selected]);
 
-  if (challenge.type !== ChallengeType.SELECT || challenge.Select.length == 0) {
+  if (
+    challenge.type !== ChallengeType.SELECT_IMAGE ||
+    challenge.SelectImage.length == 0
+  ) {
     return null;
   }
 
-  const challengeVariants = challenge.Select[0];
+  const challengeVariants = challenge.SelectImage[0];
 
   const submitResult = () => {
-    selected === challengeVariants.answer
+    selected === challengeVariants.correct
       ? setAnswerState("correct")
       : setAnswerState("incorrect");
   };
@@ -100,24 +111,32 @@ export const SelectChallenge = ({
       <h1 className="text-2xl text-zinc-800 mb-3 font-extrabold">
         {challengeVariants?.question}
       </h1>
-      <div className="flex-col flex gap-2 mb-2">
-        {challengeVariants?.options.map((option, index) => (
+      <div className="flex gap-3 mb-2 justify-center">
+        {challengeVariants?.words.map((option, index) => (
           <Button
             onClick={() => {
-              setSelected(option);
+              setSelected(option.word);
             }}
             variant="game"
+            size="icon"
             className={cn(
-              "h-12",
-              option === selected &&
+              "h-40 w-40 flex-col",
+              option.word === selected &&
                 "border-green-300 bg-green-400/20 hover:bg-green-400/20 text-green-400",
               answerState == "incorrect" &&
-                option === selected &&
+                option.word === selected &&
                 "bg-red-400/20 text-red-400 hover:bg-red-400/20 border-red-300",
             )}
             key={index}
           >
-            {option}
+            <Image
+              width={175}
+              height={175}
+              className="object-fit mix-blend-multiply"
+              alt=""
+              src={option.image}
+            />
+            {option.word}
           </Button>
         ))}
       </div>
