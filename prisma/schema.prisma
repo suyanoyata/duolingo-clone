@@ -19,6 +19,7 @@ model User {
   experience   Int       @default(0)
   score        Int       @default(0)
   joinedAt     DateTime  @default(now())
+  isAdmin      Boolean   @default(false)
   activeCourse Progress? @relation(fields: [progressId], references: [id])
   progressId   Int?
 }

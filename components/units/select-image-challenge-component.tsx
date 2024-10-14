@@ -1,14 +1,18 @@
-import { Challenge, ChallengeType, SelectImage, User } from "@prisma/client";
-import { Button } from "../ui/button";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+
+import { GameLesson } from "@/types/Game";
+import { Challenge, ChallengeType, User } from "@prisma/client";
+
 import { cn } from "@/lib/utils";
 import { clientStore } from "@/store/user-store";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { GameLesson } from "@/types/Game";
+
 import { useLessonEdit } from "@/hooks/useLessonEdit";
 import { useReduceHearts } from "@/hooks/useReduceHearts";
-import Image from "next/image";
 
 export const SelectImageChallenge = ({
   lessonId,
@@ -130,6 +134,7 @@ export const SelectImageChallenge = ({
             key={index}
           >
             <Image
+              priority
               width={175}
               height={175}
               className="object-fit mix-blend-multiply"

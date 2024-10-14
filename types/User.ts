@@ -31,6 +31,7 @@ export const User = z.object({
   score: z.number(),
   joinedAt: z.date(),
   progressId: z.number().nullable(),
+  isAdmin: z.boolean(),
 });
 
 export type UserLoginFormData = z.infer<typeof UserLoginSchema>;

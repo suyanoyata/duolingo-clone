@@ -10,8 +10,11 @@ export const CountryFlag = ({
   size?: number;
   className?: string;
 }) => {
+  if (code?.length !== 2) return null;
+
   return (
     <Image
+      priority
       className={cn("rounded-sm shadow-sm", className)}
       src={`/flags/${code}.svg`}
       alt=""

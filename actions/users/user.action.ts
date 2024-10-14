@@ -1,13 +1,17 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
+
 import { faker } from "@faker-js/faker";
 import {
   clearSession,
   generateSession,
   verifySession,
 } from "@/lib/session-helper";
+
+import bcrypt from "bcrypt";
 import { hashPassword } from "@/lib/hash-password";
+
 import {
   User,
   UserLoginFormData,
@@ -15,7 +19,6 @@ import {
   UserRegisterFormData,
   UserRegisterSchema,
 } from "@/types/User";
-import bcrypt from "bcrypt";
 
 const db = new PrismaClient();
 
