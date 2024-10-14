@@ -32,7 +32,10 @@ const createCourse = async (course: CourseCreateFormData) => {
   const permitted = await isPermittedAction();
 
   if (!permitted.success) {
-    return permitted;
+    return {
+      success: false,
+      message: permitted.message,
+    };
   }
 
   const exists = await db.language.findFirst({
