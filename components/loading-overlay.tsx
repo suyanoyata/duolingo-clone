@@ -13,11 +13,17 @@ export const LoadingOverlay = () => {
   );
 };
 
-export const LoadingCircle = ({ className }: { className?: string }) => {
+export const LoadingCircle = ({
+  className,
+  size = 16,
+}: {
+  className?: string;
+  size?: number;
+}) => {
   return (
     <div className="flex-1 flex items-center justify-center">
       <Loader
-        size={16}
+        size={size}
         className={cn("spin text-black", className)}
         strokeWidth={1.8}
       />

@@ -20,6 +20,9 @@ export const getCourseByCode = async (code: string) => {
     },
     select: {
       Lesson: {
+        where: {
+          isLessonVisible: true,
+        },
         select: {
           id: true,
         },

@@ -2,7 +2,7 @@
 
 import { verifySession } from "@/lib/session-helper";
 import { CourseCreateFormData } from "@/types/Forms";
-import { PrismaClient } from "@prisma/client";
+import { Lesson, PrismaClient, Unit } from "@prisma/client";
 
 const db = new PrismaClient();
 
@@ -71,4 +71,55 @@ const createCourse = async (course: CourseCreateFormData) => {
   };
 };
 
-export { createCourse };
+const editUnit = async (unit: Unit) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  const updatedUnit = await db.unit.update({
+    where: {
+      id: unit.id,
+    },
+    data: {
+      name: unit.name,
+      description: unit.description,
+    },
+  });
+
+  return {
+    success: true,
+    data: updatedUnit,
+  };
+};
+
+const editLesson = async (lesson: Lesson) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  const updatedLesson = await db.lesson.update({
+    where: {
+      id: lesson.id,
+    },
+    data: {
+      isLessonVisible: lesson.isLessonVisible,
+    },
+  });
+
+  return {
+    success: true,
+    data: updatedLesson,
+  };
+};
+
+export { createCourse, editUnit, editLesson };

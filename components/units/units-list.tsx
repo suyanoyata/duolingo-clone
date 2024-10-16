@@ -14,7 +14,7 @@ export const UnitsList = ({ languageCode }: { languageCode: string }) => {
   }
 
   return (
-    <div>
+    <div className="pb-4">
       {units.map((unit) => (
         <UnitComponent key={unit.id} unit={unit} />
       ))}

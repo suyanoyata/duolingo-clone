@@ -47,10 +47,16 @@ const getUnits = async (code: string) => {
   });
 };
 
-const getLessons = async (unitId: number) => {
+const getLessons = async (
+  unitId: number,
+  options: {
+    showHidden?: boolean;
+  } = { showHidden: false },
+) => {
   return await db.lesson.findMany({
     where: {
       unitId,
+      isLessonVisible: options.showHidden ? undefined : true,
     },
     orderBy: {
       order: "asc",

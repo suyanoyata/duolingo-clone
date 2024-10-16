@@ -8,6 +8,10 @@ export async function middleware(request: NextRequest) {
   const session = await verifySession();
   const db = new PrismaClient().$extends(withAccelerate());
 
+  if (!session.data?.id) {
+    return NextResponse.redirect(new URL("/learn", request.url));
+  }
+
   const user = await db.user.findFirst({
     where: {
       id: session.data.id,

@@ -59,12 +59,13 @@ model Unit {
 }
 
 model Lesson {
-  id        Int         @id @default(autoincrement())
-  unit      Unit        @relation(fields: [unitId], references: [id])
-  order     Int         @default(1)
-  unitId    Int
-  Challenge Challenge[]
-  Progress  Progress[]
+  id              Int         @id @default(autoincrement())
+  unit            Unit        @relation(fields: [unitId], references: [id])
+  order           Int         @default(1)
+  unitId          Int
+  isLessonVisible Boolean     @default(true)
+  Challenge       Challenge[]
+  Progress        Progress[]
 }
 
 model Challenge {

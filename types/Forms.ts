@@ -21,4 +21,14 @@ export const CourseCreateSchema = z.object({
     }),
 });
 
+export const EditUnitSchema = z.object({
+  name: z.string().min(4, {
+    message: "Назва занадто коротка",
+  }),
+  description: z.string().min(8, {
+    message: "Опис занадто короткий",
+  }),
+});
+
 export type CourseCreateFormData = z.infer<typeof CourseCreateSchema>;
+export type EditUnitFormData = z.infer<typeof EditUnitSchema>;
