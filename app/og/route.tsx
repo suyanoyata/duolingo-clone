@@ -6,16 +6,16 @@ import { headers as NextHeaders } from "next/headers";
 
 export const runtime = "edge";
 
-export async function GET(req: NextRequest) {
-  const Stats = ({ count, label }: { count: number; label: string }) => (
-    <div tw="flex flex-col items-center mr-5">
-      <span style={{ fontFamily: "Nunito Black" }} tw="text-4xl text-zinc-800">
-        {count}
-      </span>
-      <span tw="text-zinc-400">{label}</span>
-    </div>
-  );
+const Stats = ({ count, label }: { count: number; label: string }) => (
+  <div tw="flex flex-col items-center mr-5">
+    <span style={{ fontFamily: "Nunito Black" }} tw="text-4xl text-zinc-800">
+      {count}
+    </span>
+    <span tw="text-zinc-400">{label}</span>
+  </div>
+);
 
+export async function GET(req: NextRequest) {
   const bold = await fetch(
     new URL("../../public/fonts/Nunito-Bold.ttf", import.meta.url),
   );
@@ -28,13 +28,11 @@ export async function GET(req: NextRequest) {
   const course = await getCourseByCode(params.get("code") || "");
 
   const headers = NextHeaders();
-  const origin =
-    process.env.NODE_ENV == "production"
-      ? `https://${headers.get("host")}`
-      : `http://${headers.get("host")}`;
+  const origin = headers.get("host");
 
   const imageSize = 82;
 
+  // #region ImageResponse
   return new ImageResponse(
     (
       <div
@@ -112,4 +110,5 @@ export async function GET(req: NextRequest) {
       ],
     },
   );
+  // #endregion
 }
