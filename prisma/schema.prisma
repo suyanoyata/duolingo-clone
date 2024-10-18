@@ -53,24 +53,28 @@ model Unit {
   name         String
   description  String
   order        Int      @default(1)
-  language     Language @relation(fields: [languageCode], references: [code])
+  language     Language @relation(fields: [languageCode], references: [code], onDelete: Cascade)
   languageCode String
   Lesson       Lesson[]
+
+  @@unique([languageCode, order])
 }
 
 model Lesson {
   id              Int         @id @default(autoincrement())
-  unit            Unit        @relation(fields: [unitId], references: [id])
+  unit            Unit        @relation(fields: [unitId], references: [id], onDelete: Cascade)
   order           Int         @default(1)
   unitId          Int
   isLessonVisible Boolean     @default(true)
   Challenge       Challenge[]
   Progress        Progress[]
+
+  @@unique([unitId, order])
 }
 
 model Challenge {
   id          Int           @id @default(autoincrement())
-  lesson      Lesson        @relation(fields: [lessonId], references: [id])
+  lesson      Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   order       Int           @default(1)
   lessonId    Int
   type        ChallengeType
@@ -81,7 +85,7 @@ model Challenge {
 
 model Select {
   id          Int       @id @default(autoincrement())
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   challengeId Int
   question    String
   options     String[]
@@ -93,7 +97,7 @@ model Sentence {
   question    String
   words       String[]
   correct     String[]
-  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   challengeId Int?
 }
 
@@ -102,7 +106,7 @@ model SelectImage {
   question    String
   words       SelectImageOptions[]
   correct     String
-  challenge   Challenge?           @relation(fields: [challengeId], references: [id])
+  challenge   Challenge?           @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   challengeId Int?
 }
 
@@ -110,7 +114,7 @@ model SelectImageOptions {
   id            Int          @id @default(autoincrement())
   image         String
   word          String
-  selectImage   SelectImage? @relation(fields: [selectImageId], references: [id])
+  selectImage   SelectImage? @relation(fields: [selectImageId], references: [id], onDelete: Cascade)
   selectImageId Int?
 }
 
