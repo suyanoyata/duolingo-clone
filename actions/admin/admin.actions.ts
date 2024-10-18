@@ -132,20 +132,26 @@ const reorderChallenges = async (challenges: Challenge[]) => {
     };
   }
 
-  const result = await db.$transaction(async (tx) => {
-    for (const item of challenges) {
-      console.log(`For id ${item.id} set order: ${item.order}`);
-      await tx.challenge.update({
-        where: { id: item.id },
-        data: { order: item.order },
-      });
-    }
-  });
-
-  return {
-    success: true,
-    data: result,
-  };
+  try {
+    const result = await db.$transaction(async (tx) => {
+      for (const item of challenges) {
+        await tx.challenge.update({
+          where: { id: item.id },
+          data: { order: item.order },
+        });
+      }
+    });
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (e) {
+    console.error(e);
+    return {
+      success: false,
+      message: "Сталась помилка при зміні порядку завдань, спробуйте пізніше",
+    };
+  }
 };
 
 export { createCourse, editUnit, editLesson, reorderChallenges };

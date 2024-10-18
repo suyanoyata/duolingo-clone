@@ -105,14 +105,34 @@ export default function Page({ params }: { params: { lessonId: string } }) {
 
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
-    mutationKey: ["reorder-lesson", challenges?.map((lesson) => lesson.id)],
+  const { mutate, error, isError } = useMutation({
+    mutationKey: [
+      "reorder-lesson",
+      // fixme?: when re-order fails, we make it go back to previous state,
+      // but because of that we can't render error,
+      // because challenge is not in state when error happens
+
+      // -- either remove dynamic key or find another way
+
+      // challenges?.map((lesson) => lesson.id)
+    ],
     mutationFn: async () => {
       const newOrder = debouncedChallenges!.map((lesson, index) => ({
         ...lesson,
         order: index + 1,
       }));
-      return await reorderChallenges(newOrder!);
+      const result = await reorderChallenges(newOrder!);
+
+      if (!result.success) {
+        throw {
+          message: result.message,
+        };
+      }
+
+      return result.data;
+    },
+    onError: () => {
+      setChallenges(data);
     },
     onSuccess: () => {
       // BUG: remove this to get rid of loading circle,
@@ -143,14 +163,17 @@ export default function Page({ params }: { params: { lessonId: string } }) {
   }
 
   return (
-    <main>
+    <main className="my-2 mx-2">
+      {isError && (
+        <p className="text-red-500 text-sm font-medium mb-2">{error.message}</p>
+      )}
       <Reorder.Group
         axis="y"
         values={challenges}
         onReorder={(data) => {
           setChallenges(data);
         }}
-        className="space-y-3 my-2 mx-2"
+        className="space-y-3"
       >
         {challenges.map(
           (challenge) =>
