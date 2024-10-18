@@ -4,7 +4,7 @@ import { verifySession } from "@/lib/session-helper";
 import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient({
-  log: ["error", "info", "warn"],
+  log: ["error", "warn"],
 });
 
 const getCourseByCode = async (code: string) => {
@@ -78,7 +78,6 @@ const getLesson = async (lessonId: number) => {
           id: true,
           question: true,
           correct: true,
-          challengeId: true,
           words: {
             select: {
               image: true,

@@ -1,7 +1,168 @@
-export default function Page({ params }: { params: { lessonId: number } }) {
+"use client";
+
+import { Reorder, useDragControls } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { getLesson } from "@/actions/courses/courses.action";
+import { reorderChallenges } from "@/actions/admin/admin.actions";
+
+import { LoadingOverlay } from "@/components/loading-overlay";
+import { GripVertical } from "lucide-react";
+
+import { useDebounce } from "@/hooks/useDebounce";
+
+import { Challenge, ChallengeType, Select, Sentence } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+
+// #region helper components
+const DisplayText = ({ children }: { children: React.ReactNode }) => {
+  return <p className="text-zinc-600 font-semibold">{children}</p>;
+};
+
+const ChallengeDisplay = ({
+  challenge,
+  question,
+}: {
+  challenge: Challenge;
+  question: {
+    label: string;
+    question: string;
+  };
+}) => {
+  const controls = useDragControls();
   return (
-    <div>
-      not ready yet <p>{params.lessonId}</p>
-    </div>
+    <Reorder.Item
+      dragListener={false}
+      dragControls={controls}
+      value={challenge}
+      className="flex gap-2 select-none items-center"
+    >
+      <Button
+        onPointerDown={(e) => controls.start(e)}
+        size="sm"
+        variant="ghost"
+        className="cursor-grab"
+      >
+        <GripVertical className="text-zinc-600 flex-shrink-0" />
+      </Button>
+      <div>
+        <p className="text-sm text-zinc-400 font-semibold">{question.label}</p>
+        <DisplayText>{question.question}</DisplayText>
+      </div>
+    </Reorder.Item>
+  );
+};
+
+// #endregion
+
+const getChallengeQuestion = (
+  challenge: Challenge & {
+    Select: Select[];
+    SelectImage: {
+      question: string;
+    }[];
+    Sentence: Sentence[];
+  },
+) => {
+  switch (challenge?.type) {
+    case ChallengeType.SELECT:
+      return {
+        question: challenge.Select[0]?.question,
+        label: "Вибір із варіантів",
+      };
+    case ChallengeType.SELECT_IMAGE:
+      return {
+        question: challenge.SelectImage[0]?.question,
+        label: "Вибір із зображенням",
+      };
+    case ChallengeType.SENTENCE:
+      return {
+        question: challenge.Sentence[0]?.question,
+        label: "Скласти речення",
+      };
+    default:
+      return null;
+  }
+};
+
+export default function Page({ params }: { params: { lessonId: string } }) {
+  const lessonId = parseInt(params.lessonId);
+
+  // #region getLesson & setState
+  const { data, isPending } = useQuery({
+    queryKey: ["lesson", lessonId],
+    queryFn: async () => getLesson(lessonId),
+  });
+
+  const [challenges, setChallenges] = useState(data);
+
+  useEffect(() => {
+    setChallenges(data);
+  }, [data]);
+
+  // #endregion
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationKey: ["reorder-lesson", challenges?.map((lesson) => lesson.id)],
+    mutationFn: async () => {
+      const newOrder = debouncedChallenges!.map((lesson, index) => ({
+        ...lesson,
+        order: index + 1,
+      }));
+      return await reorderChallenges(newOrder!);
+    },
+    onSuccess: () => {
+      // BUG: remove this to get rid of loading circle,
+      // removing this will make re-order (mutation) update twice
+
+      // setChallenges(undefined);
+      queryClient.refetchQueries({
+        queryKey: ["lesson", lessonId],
+      });
+    },
+  });
+
+  // update with delay for changing order
+  const debouncedChallenges = useDebounce(challenges, 500);
+
+  // #region push update if data changed
+  useEffect(() => {
+    if (data && debouncedChallenges) {
+      if (data !== debouncedChallenges) {
+        mutate();
+      }
+    }
+  }, [debouncedChallenges, data, mutate]);
+  // #endregion
+
+  if (!data || isPending || !challenges) {
+    return <LoadingOverlay />;
+  }
+
+  return (
+    <main>
+      <Reorder.Group
+        axis="y"
+        values={challenges}
+        onReorder={(data) => {
+          setChallenges(data);
+        }}
+        className="space-y-3 my-2 mx-2"
+      >
+        {challenges.map(
+          (challenge) =>
+            getChallengeQuestion(challenge) && (
+              <ChallengeDisplay
+                challenge={challenge}
+                key={challenge.id}
+                question={getChallengeQuestion(challenge)!}
+              />
+            ),
+        )}
+      </Reorder.Group>
+    </main>
   );
 }

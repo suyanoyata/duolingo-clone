@@ -77,7 +77,7 @@ export const CreateCourse = () => {
       clearErrors("root");
     });
     return () => unsubscribe();
-  }, [watch]);
+  }, [watch, clearErrors]);
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>

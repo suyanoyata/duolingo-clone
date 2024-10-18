@@ -2,7 +2,7 @@
 
 import { verifySession } from "@/lib/session-helper";
 import { CourseCreateFormData } from "@/types/Forms";
-import { Lesson, PrismaClient, Unit } from "@prisma/client";
+import { Challenge, Lesson, PrismaClient, Unit } from "@prisma/client";
 
 const db = new PrismaClient();
 
@@ -122,4 +122,30 @@ const editLesson = async (lesson: Lesson) => {
   };
 };
 
-export { createCourse, editUnit, editLesson };
+const reorderChallenges = async (challenges: Challenge[]) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  const result = await db.$transaction(async (tx) => {
+    for (const item of challenges) {
+      console.log(`For id ${item.id} set order: ${item.order}`);
+      await tx.challenge.update({
+        where: { id: item.id },
+        data: { order: item.order },
+      });
+    }
+  });
+
+  return {
+    success: true,
+    data: result,
+  };
+};
+
+export { createCourse, editUnit, editLesson, reorderChallenges };
