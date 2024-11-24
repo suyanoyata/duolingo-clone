@@ -1,5 +1,6 @@
 import { z } from "zod";
 import validator from "validator";
+import { ChallengeType } from "@prisma/client";
 
 export const CourseCreateSchema = z.object({
   course_name: z.string().min(2, {
@@ -30,5 +31,26 @@ export const EditUnitSchema = z.object({
   }),
 });
 
+export const CreateSelectChallengeSchema = z.object({
+  question: z.string().min(4, {
+    message: "Питання занадто коротке",
+  }),
+  options: z.array(z.string()).min(2, {
+    message: "Варіанти відповідей занадто короткі",
+  }),
+  answer: z.string(),
+});
+
 export type CourseCreateFormData = z.infer<typeof CourseCreateSchema>;
 export type EditUnitFormData = z.infer<typeof EditUnitSchema>;
+export type CreateSelectChallengeFormData = z.infer<
+  typeof CreateSelectChallengeSchema
+>;
+export type ChallengeData = {
+  type: ChallengeType;
+  question: string;
+  answer: string;
+  options?: string[];
+  words?: string[];
+  correct: string[];
+};

@@ -1,7 +1,7 @@
 "use client";
 
 import { Reorder, useDragControls } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getLesson } from "@/actions/courses/courses.action";
@@ -14,6 +14,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 
 import { Challenge, ChallengeType, Select, Sentence } from "@prisma/client";
 import { Button } from "@/components/ui/button";
+import { CreateChallenge } from "@/components/admin/forms/create-challenge";
 
 // #region helper components
 const DisplayText = ({ children }: { children: React.ReactNode }) => {
@@ -21,9 +22,11 @@ const DisplayText = ({ children }: { children: React.ReactNode }) => {
 };
 
 const ChallengeDisplay = ({
+  constraints,
   challenge,
   question,
 }: {
+  constraints: React.RefObject<HTMLDivElement>;
   challenge: Challenge;
   question: {
     label: string;
@@ -35,8 +38,9 @@ const ChallengeDisplay = ({
     <Reorder.Item
       dragListener={false}
       dragControls={controls}
+      dragConstraints={constraints}
       value={challenge}
-      className="flex gap-2 select-none items-center"
+      className="flex gap-2 select-none items-center z-10 bg-white p-2 rounded-md"
     >
       <Button
         onPointerDown={(e) => controls.start(e)}
@@ -135,8 +139,9 @@ export default function Page({ params }: { params: { lessonId: string } }) {
       setChallenges(data);
     },
     onSuccess: () => {
-      // BUG: remove this to get rid of loading circle,
+      // BUG: uncomment this to get rid of loading circle,
       // removing this will make re-order (mutation) update twice
+      // but adding this will make loading circle appear for a second
 
       // setChallenges(undefined);
       queryClient.refetchQueries({
@@ -147,6 +152,8 @@ export default function Page({ params }: { params: { lessonId: string } }) {
 
   // update with delay for changing order
   const debouncedChallenges = useDebounce(challenges, 500);
+
+  const reorderConstraints = useRef(null);
 
   // #region push update if data changed
   useEffect(() => {
@@ -164,28 +171,36 @@ export default function Page({ params }: { params: { lessonId: string } }) {
 
   return (
     <main className="my-2 mx-2">
-      {isError && (
-        <p className="text-red-500 text-sm font-medium mb-2">{error.message}</p>
-      )}
-      <Reorder.Group
-        axis="y"
-        values={challenges}
-        onReorder={(data) => {
-          setChallenges(data);
-        }}
-        className="space-y-3"
-      >
-        {challenges.map(
-          (challenge) =>
-            getChallengeQuestion(challenge) && (
-              <ChallengeDisplay
-                challenge={challenge}
-                key={challenge.id}
-                question={getChallengeQuestion(challenge)!}
-              />
-            ),
+      <div className="z-20">
+        <CreateChallenge />
+        {isError && (
+          <p className="text-red-500 text-sm font-medium mb-2">
+            {error.message}
+          </p>
         )}
-      </Reorder.Group>
+      </div>
+      <section className="z-10" ref={reorderConstraints}>
+        <Reorder.Group
+          axis="y"
+          values={challenges}
+          onReorder={(data) => {
+            setChallenges(data);
+          }}
+          className="space-y-1"
+        >
+          {challenges.map(
+            (challenge) =>
+              getChallengeQuestion(challenge) && (
+                <ChallengeDisplay
+                  constraints={reorderConstraints}
+                  challenge={challenge}
+                  key={challenge.id}
+                  question={getChallengeQuestion(challenge)!}
+                />
+              ),
+          )}
+        </Reorder.Group>
+      </section>
     </main>
   );
 }
