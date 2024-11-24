@@ -10,7 +10,11 @@ import { ChallengeType } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 
-const CreateSelectChallengeFields = [
+const CreateSelectChallengeFields: Array<{
+  name: keyof CreateSelectChallengeFormData;
+  label: string;
+  placeholder?: string;
+}> = [
   {
     name: "question",
     label: "Запитання",
@@ -47,9 +51,9 @@ const CreateSelectChallenge = () => {
               label={field.label}
               placeholder={field.placeholder}
             />
-            {errors[field.name as "name"] && (
+            {errors[field.name] && (
               <p className="text-red-500 font-medium text-sm">
-                {errors[field.name as "name"]!.message}
+                {errors[field.name]!.message}
               </p>
             )}
           </div>
