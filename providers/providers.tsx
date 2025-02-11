@@ -17,13 +17,13 @@ const ClientProviders = ({ children }: { children: React.ReactNode }) => {
             enabled: true,
           },
         },
-      }),
+      })
   );
 
   return (
     <QueryClientProvider client={queryClient}>
       <MotionConfig reducedMotion="user">
-        <div className="relative">{children}</div>
+        <div className="flex-1 flex flex-row">{children}</div>
       </MotionConfig>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

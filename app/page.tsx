@@ -31,7 +31,7 @@ export default function Home() {
   }
 
   return (
-    <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto">
       <section className="h-screen flex items-center justify-center flex-wrap">
         <div className="w-[400px] h-[400px] bg-zinc-100 rounded-lg flex items-center justify-center">
           <p className="text-zinc-300 text-sm font-bold">
@@ -43,14 +43,8 @@ export default function Home() {
             Простий та веселий шлях вивчити іноземну мову
           </h1>
           <div className="w-[280px]">
-            <RegisterForm
-              onOpenChange={setCreateAccountOpen}
-              open={createAccountOpen}
-            />
-            <LoginForm
-              onOpenChange={setLoginAccountOpen}
-              open={loginAccountOpen}
-            >
+            <RegisterForm onOpenChange={setCreateAccountOpen} open={createAccountOpen} />
+            <LoginForm onOpenChange={setLoginAccountOpen} open={loginAccountOpen}>
               В мене вже є аккаунт
             </LoginForm>
           </div>

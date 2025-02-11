@@ -1,29 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { AnimatePresence } from "framer-motion";
 
 import { ChevronLeft, Plus } from "lucide-react";
+
 import { CreateChallengeSelectType } from "./create-challenge/step-1";
-import { createChallengeStore } from "@/store/create-lesson-store";
 import { CreateChallengeInputStep } from "./create-challenge/step-2";
+
+import { createChallengeStore } from "@/store/create-lesson-store";
+import { useMutation } from "@tanstack/react-query";
 
 export const CreateChallenge = () => {
   const [open, setOpen] = useState(false);
-  const { challengeType } = createChallengeStore();
+  const { setChallengeType } = createChallengeStore();
 
   const [step, setStep] = useState(0);
 
-  // const queryClient = useQueryClient();
-
   const stepBack = () => {
-    if (step > 0) {
-      setStep(step - 1);
-    }
+    if (step > 0) setStep(step - 1);
   };
+
+  useMutation({
+    mutationKey: ["create-challenge"],
+    onSuccess: () => setOpen(false),
+  });
+
+  useEffect(() => {
+    return () => {
+      setTimeout(() => {
+        if (!open) {
+          setStep(0);
+          setChallengeType(undefined);
+        }
+      }, 50);
+    };
+  }, [open]);
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
@@ -33,7 +48,7 @@ export const CreateChallenge = () => {
           Створити завдання
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col">
+      <DialogContent className="flex flex-col overflow-hidden">
         <div className="inline-flex items-center flex-row gap-2 font-semibold text-zinc-500 -mt-3">
           <Button
             disabled={step == 0}
@@ -52,7 +67,6 @@ export const CreateChallenge = () => {
               current={step}
               setCurrent={setStep}
               index={0}
-              active={challengeType}
             />
           </AnimatePresence>
           <CreateChallengeInputStep index={1} current={step} />

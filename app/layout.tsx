@@ -4,6 +4,7 @@ import { Nunito } from "next/font/google";
 import { cn, db_sync, isDev } from "@/lib/utils";
 import ClientProviders from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const nunito = Nunito({ subsets: ["latin", "cyrillic"] });
 
@@ -20,14 +21,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(`antialiased min-w-[320px]`, nunito.className)}>
-        <Toaster />
-        {!db_sync && isDev && (
-          <nav className="absolute bottom-0 left-0 w-full h-7 bg-red-400 text-white font-bold text-sm flex items-center justify-center z-50">
-            prisma file has unconfirmed database changes, push them with npx
-            prisma db push
-          </nav>
-        )}
-        <ClientProviders>{children}</ClientProviders>
+        <SidebarProvider>
+          <Toaster />
+          {!db_sync && isDev && (
+            <nav className="absolute bottom-0 left-0 w-full h-7 bg-red-400 text-white font-bold text-sm flex items-center justify-center z-50">
+              prisma file has unconfirmed database changes, push them with npx
+              prisma db push
+            </nav>
+          )}
+          <ClientProviders>{children}</ClientProviders>
+        </SidebarProvider>
       </body>
     </html>
   );

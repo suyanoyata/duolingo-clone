@@ -6,7 +6,7 @@ interface UserStore {
   question: string;
   answer: string;
   correct: string[];
-  setChallengeType: (challengeType: ChallengeType) => void;
+  setChallengeType: (challengeType: ChallengeType | undefined) => void;
   setQuestion: (question: string) => void;
   setAnswer: (answer: string) => void;
   setCorrect: (correct: string[]) => void;
@@ -17,8 +17,8 @@ export const createChallengeStore = create<UserStore>((set) => ({
   question: "",
   answer: "",
   correct: [],
-  setChallengeType: (challengeType: ChallengeType) => set({ challengeType }),
-  setQuestion: (question: string) => set({ question }),
-  setAnswer: (answer: string) => set({ answer }),
-  setCorrect: (correct: string[]) => set({ correct }),
+  setChallengeType: (challengeType) => set({ challengeType }),
+  setQuestion: (question) => set({ question }),
+  setAnswer: (answer) => set({ answer }),
+  setCorrect: (correct) => set({ correct }),
 }));

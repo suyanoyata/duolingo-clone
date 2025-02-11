@@ -9,11 +9,10 @@ export const AddLessonComponent = ({ index }: { index: number }) => {
   return (
     <div>
       <Button
-        disabled
         onClick={() => {}}
-        variant="primary"
+        variant="secondary"
         className={cn(
-          "w-20 h-20 rounded-full relative border-b-[10px] hover:border-b-[8px] bg-zinc-400 hover:bg-zinc-400 border-zinc-500",
+          "w-20 h-20 rounded-full relative border-b-[10px] hover:border-b-[8px]"
         )}
         style={{
           left: `${position}px`,

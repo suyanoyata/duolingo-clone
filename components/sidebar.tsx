@@ -1,20 +1,30 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { SidebarLink } from "./sidebar-link";
 import { getCurrentUser } from "@/actions/users/user.action";
-import { LoadingOverlay } from "./loading-overlay";
-import { useRouter } from "next/navigation";
+import { LoadingOverlay } from "@/components/loading-overlay";
+import {
+  Sidebar as ShadSidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import { useQuery } from "@tanstack/react-query";
 import { GraduationCap, Settings, User } from "lucide-react";
+import Link from "next/link";
 
-export const Sidebar = () => {
+import { usePathname, useRouter } from "next/navigation";
+
+export function Sidebar() {
+  const pathname = usePathname();
+
+  const router = useRouter();
+
   const { data, isPending } = useQuery({
     queryKey: ["user"],
     queryFn: async () => await getCurrentUser(),
     enabled: true,
   });
-
-  const router = useRouter();
 
   if (isPending) {
     return <LoadingOverlay />;
@@ -25,39 +35,34 @@ export const Sidebar = () => {
   }
 
   return (
-    <>
-      <div className="max-sm:flex hidden h-12 bg-zinc-100 w-full fixed bottom-0 items-center justify-around border-t-2">
-        <SidebarLink href="/learn" className="flex-col">
-          <GraduationCap />
-        </SidebarLink>
-        <SidebarLink href={`/profile/${data.nickname}`}>
-          <User />
-        </SidebarLink>
-        <SidebarLink href="/settings">
-          <Settings />
-        </SidebarLink>
-      </div>
-      <div className="fixed top-0 left-0 border-r-2 border-zinc-100 w-[240px] max-sm:hidden flex h-screen px-3 py-2 flex-col flex-shrink-0 bg-white">
-        <h1 className="text-4xl font-extrabold text-zinc-800 select-none mb-3">
-          fluenty
-        </h1>
-        <div className="flex flex-col gap-2">
-          <SidebarLink href="/learn">
+    <ShadSidebar collapsible="icon">
+      <SidebarHeader>
+        <h1 className="text-4xl font-extrabold text-zinc-800 select-none mb-3">fluenty</h1>
+        <SidebarMenuButton asChild variant={pathname == "/learn" ? "focused" : "default"}>
+          <Link href="/learn">
             <GraduationCap />
-            Навчатись
-          </SidebarLink>
-        </div>
-        <div className="mt-auto space-y-2">
-          <SidebarLink href="/settings">
+            <span>Навчатись</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarHeader>
+      <SidebarContent />
+      <SidebarFooter className="space-y-1">
+        <SidebarMenuButton asChild variant={pathname == "/settings" ? "focused" : "default"}>
+          <Link href="/settings">
             <Settings />
-            Налаштування
-          </SidebarLink>
-          <SidebarLink href={`/profile/${data.nickname}`}>
+            <span>Налаштування</span>
+          </Link>
+        </SidebarMenuButton>
+        <SidebarMenuButton
+          asChild
+          variant={pathname == `/profile/${data.nickname}` ? "focused" : "default"}
+        >
+          <Link href={`/profile/${data.nickname}`}>
             <User />
-            Профіль
-          </SidebarLink>
-        </div>
-      </div>
-    </>
+            <span>Профіль</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarFooter>
+    </ShadSidebar>
   );
-};
+}

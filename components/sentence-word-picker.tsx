@@ -10,11 +10,18 @@ export const SentenceWordPicker = (props: {
   setWords: (words: SentenceWord[]) => void;
   setSentence: Dispatch<SetStateAction<SentenceWord[]>>;
   animationConfig: AnimationConfig;
+  disableNarrator?: boolean;
 }) => {
-  const { words, animationConfig, setWords, setSentence } = props;
+  const {
+    words,
+    animationConfig,
+    setWords,
+    setSentence,
+    disableNarrator = false,
+  } = props;
   const Button = motion.create(ShadButton);
 
-  const { setWord } = useTextToSpeech(words);
+  const { setWord } = useTextToSpeech(words, disableNarrator);
 
   const addWordToSentence = (word: SentenceWord) => {
     const newWords = [...words];

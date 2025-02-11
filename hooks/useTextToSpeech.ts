@@ -1,19 +1,28 @@
 import { SentenceWord } from "@/types/Game";
 import { useEffect, useRef, useState } from "react";
 
-export const useTextToSpeech = (words: SentenceWord[]) => {
-  const sentenceWords = words.map((word) => word.text.toLowerCase());
+export const useTextToSpeech = (
+  words: SentenceWord[],
+  disableNarrator: boolean = false
+) => {
+  const sentenceWords = words.map((word) => {
+    const clearWord = word.text.replace(/[^a-zA-Z]/g, "");
+
+    return clearWord.toLowerCase();
+  });
   const [word, setWord] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCache = useRef<Map<string, HTMLAudioElement>>(new Map());
 
   useEffect(() => {
     const prefetchAudio = async () => {
-      sentenceWords.forEach((word) => {
-        const audioUrl = `https://d7mj4aqfscim2.cloudfront.net/tts/en/token/${word}`;
-        const audio = new Audio(audioUrl);
-        audioCache.current.set(word.toLowerCase(), audio);
-      });
+      if (!disableNarrator) {
+        sentenceWords.forEach((word) => {
+          const audioUrl = `https://d7mj4aqfscim2.cloudfront.net/tts/en/token/${word}`;
+          const audio = new Audio(audioUrl);
+          audioCache.current.set(word.toLowerCase(), audio);
+        });
+      }
     };
 
     prefetchAudio();
@@ -28,7 +37,7 @@ export const useTextToSpeech = (words: SentenceWord[]) => {
   }, [sentenceWords]);
 
   useEffect(() => {
-    if (word) {
+    if (word && !disableNarrator) {
       const playAudio = () => {
         if (audioRef.current) {
           audioRef.current.pause();
@@ -50,7 +59,7 @@ export const useTextToSpeech = (words: SentenceWord[]) => {
         audioRef.current.pause();
       }
     };
-  }, [word]);
+  }, [word, disableNarrator]);
 
   return { setWord };
 };

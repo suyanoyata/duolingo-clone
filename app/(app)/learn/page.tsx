@@ -37,7 +37,7 @@ export default function Page() {
     }
 
     return (
-      <div className="p-2 mx-auto max-w-[800px]">
+      <div>
         <h1 className="text-3xl max-sm:text-2xl font-extrabold text-zinc-700 mb-2">
           Оберіть мову для вивчення
         </h1>

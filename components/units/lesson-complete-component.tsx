@@ -15,16 +15,14 @@ import {
 
 export const LessonComplete = ({
   challengeLength,
-  completed,
   isPreviousChallengeCompleting,
 }: {
   challengeLength: number;
-  completed: boolean;
   isPreviousChallengeCompleting: boolean;
 }) => {
   const { currentChallengeIndex, lastLanguageCode, lessonId } = clientStore();
 
-  const { data: user, refetch } = useQuery<User>({
+  const { data: user, refetch: refetchUser } = useQuery<User>({
     queryKey: ["user"],
   });
 
@@ -32,16 +30,24 @@ export const LessonComplete = ({
 
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (currentChallengeIndex == challengeLength) {
-      queryClient.removeQueries({
-        queryKey: ["profile", user?.name],
-      });
-      refetch();
-    }
-  }, [currentChallengeIndex, challengeLength, refetch]);
+  const lessonCompletedCallback = async () => {
+    if (currentChallengeIndex + 1 < challengeLength) return;
 
-  const { mutate: increaseLessonIndex } = useMutation({
+    if (isPreviousChallengeCompleting) {
+      await increaseHeart();
+    } else {
+      await increaseLessonIndex();
+    }
+    refetchUser();
+  };
+
+  useEffect(() => {
+    console.log(currentChallengeIndex, challengeLength);
+    lessonCompletedCallback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChallengeIndex, challengeLength]);
+
+  const { mutateAsync: increaseLessonIndex } = useMutation({
     mutationKey: ["current-user-courses"],
     mutationFn: async () => {
       await increaseLessonProgress(lessonId, lastLanguageCode);
@@ -52,14 +58,6 @@ export const LessonComplete = ({
       });
     },
   });
-
-  useEffect(() => {
-    if (!completed) return;
-    if (!isPreviousChallengeCompleting) {
-      increaseLessonIndex();
-    }
-    increaseHeart();
-  }, [completed, increaseLessonIndex, isPreviousChallengeCompleting]);
 
   const router = useRouter();
 

@@ -51,7 +51,7 @@ const getLessons = async (
   unitId: number,
   options: {
     showHidden?: boolean;
-  } = { showHidden: false },
+  } = { showHidden: false }
 ) => {
   return await db.lesson.findMany({
     where: {
@@ -96,10 +96,7 @@ const getLesson = async (lessonId: number) => {
   });
 };
 
-const getLessonFromSameUnit = async (
-  lessonId: number,
-  languageCode: string,
-) => {
+const getLessonFromSameUnit = async (lessonId: number, languageCode: string) => {
   return await db.unit.findFirst({
     select: {
       Lesson: {
@@ -160,10 +157,7 @@ const increaseHeart = async () => {
   });
 };
 
-const increaseLessonProgress = async (
-  lessonId: number,
-  languageCode: string,
-) => {
+const increaseLessonProgress = async (lessonId: number, languageCode: string) => {
   const session = await verifySession();
 
   const hearts = await db.user.findUniqueOrThrow({
@@ -191,6 +185,7 @@ const increaseLessonProgress = async (
   if (unit!.Lesson.length === 0) {
     const unit = await getFirstLessonFromNextUnit(lesson!.unitId);
 
+    console.log("lessons in same unit no more, setting next unit");
     // set new unit and lesson
     await db.progress.update({
       where: {
@@ -209,6 +204,7 @@ const increaseLessonProgress = async (
     });
   } else {
     // set next lesson from same unit
+    console.log("setting next lesson from same unit");
     await db.progress.update({
       where: {
         userId_languageCode: {

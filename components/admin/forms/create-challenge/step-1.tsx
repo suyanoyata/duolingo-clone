@@ -11,11 +11,9 @@ const CreateChallengeSelectComponent = ({
   type,
   children,
   src,
-  active,
   set,
 }: {
   disabled?: boolean;
-  active?: ChallengeType;
   type: ChallengeType;
   children: string;
   src: string;
@@ -30,11 +28,7 @@ const CreateChallengeSelectComponent = ({
         setChallengeType(type);
         set(1);
       }}
-      className={cn(
-        "h-48 w-48 flex-col gap-2 p-8",
-        active === type &&
-          "border-green-200 bg-green-100/50 hover:bg-green-100/70",
-      )}
+      className={cn("h-48 w-48 flex-col gap-2 p-8")}
       size="icon"
     >
       <Image
@@ -52,10 +46,8 @@ const CreateChallengeSelectComponent = ({
 export const CreateChallengeSelectType = ({
   current,
   index,
-  active,
   setCurrent,
 }: {
-  active?: ChallengeType;
   current: number;
   setCurrent: (index: number) => void;
   index: number;
@@ -70,7 +62,6 @@ export const CreateChallengeSelectType = ({
       className="flex flex-row gap-2 flex-wrap justify-center max-sm:content-start"
     >
       <CreateChallengeSelectComponent
-        active={active}
         set={setCurrent}
         type={ChallengeType.SELECT}
         src="/select-challenge.png"
@@ -78,7 +69,6 @@ export const CreateChallengeSelectType = ({
         Вибір із варіантів
       </CreateChallengeSelectComponent>
       <CreateChallengeSelectComponent
-        active={active}
         set={setCurrent}
         type={ChallengeType.SELECT_IMAGE}
         src="/select-with-image.png"
@@ -86,7 +76,6 @@ export const CreateChallengeSelectType = ({
         Вибір із зображенням
       </CreateChallengeSelectComponent>
       <CreateChallengeSelectComponent
-        active={active}
         set={setCurrent}
         type={ChallengeType.SENTENCE}
         src="/create-sentence.png"

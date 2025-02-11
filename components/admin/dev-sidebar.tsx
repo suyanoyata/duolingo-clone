@@ -1,11 +1,18 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { SidebarLink } from "@/components/sidebar-link";
 import { getCurrentUser } from "@/actions/users/user.action";
 import { LoadingOverlay } from "@/components/loading-overlay";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FlaskConical, Settings, User } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export const DevSidebar = () => {
   const { data, isPending } = useQuery({
@@ -15,6 +22,8 @@ export const DevSidebar = () => {
   });
 
   const router = useRouter();
+
+  const pathname = usePathname();
 
   if (isPending) {
     return <LoadingOverlay />;
@@ -29,28 +38,37 @@ export const DevSidebar = () => {
   }
 
   return (
-    <>
-      <div className="fixed top-0 left-0 border-r-2 border-zinc-100 w-[240px] max-sm:hidden flex h-screen px-3 py-2 flex-col flex-shrink-0 bg-white">
-        <h1 className="text-4xl font-extrabold text-zinc-800 select-none mb-3">
-          fluenty
-        </h1>
-        <div className="flex flex-col gap-2">
-          <SidebarLink href="/dashboard/courses">
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <h1 className="text-4xl font-extrabold text-zinc-800 select-none mb-3">fluenty</h1>
+        <SidebarMenuButton
+          asChild
+          variant={pathname == "/dashboard/courses" ? "focused" : "default"}
+        >
+          <Link href="/dashboard/courses">
             <FlaskConical />
-            Курси
-          </SidebarLink>
-        </div>
-        <div className="mt-auto space-y-2">
-          <SidebarLink href="/settings">
+            <span>Курси</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarHeader>
+      <SidebarContent />
+      <SidebarFooter className="space-y-1">
+        <SidebarMenuButton asChild variant={pathname == "/settings" ? "focused" : "default"}>
+          <Link href="/settings">
             <Settings />
-            Налаштування
-          </SidebarLink>
-          <SidebarLink href={`/profile/${data.nickname}`}>
+            <span>Налаштування</span>
+          </Link>
+        </SidebarMenuButton>
+        <SidebarMenuButton
+          asChild
+          variant={pathname == `/profile/${data.nickname}` ? "focused" : "default"}
+        >
+          <Link href={`/profile/${data.nickname}`}>
             <User />
-            Профіль
-          </SidebarLink>
-        </div>
-      </div>
-    </>
+            <span>Профіль</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarFooter>
+    </Sidebar>
   );
 };

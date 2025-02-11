@@ -16,16 +16,12 @@ export const SentenceChallenge = ({
   lessonId,
   challenge,
   index,
-  length,
-  setCompleted,
 }: {
   lessonId: number;
   challenge: Challenge & {
     Sentence: Sentence[];
   };
   index: number;
-  length: number;
-  setCompleted: (value: boolean) => void;
 }) => {
   const {
     currentChallengeIndex,
@@ -56,7 +52,7 @@ export const SentenceChallenge = ({
           id: index,
           text: word,
           isAvailable: true,
-        })),
+        }))
       );
     }
   }, [challenge.type, challenge.Sentence]);
@@ -68,7 +64,7 @@ export const SentenceChallenge = ({
   const submitResult = () => {
     const correct = compare(
       challenge.Sentence[0].correct,
-      userSentence.map((word) => word.text),
+      userSentence.map((word) => word.text)
     );
 
     setAnswerState(correct ? "correct" : "incorrect");
@@ -77,9 +73,6 @@ export const SentenceChallenge = ({
   useEffect(() => {
     if (answerState == "correct") {
       setCurrentChallengeIndex(currentChallengeIndex + 1);
-      if (currentChallengeIndex + 1 === length) {
-        setCompleted(true);
-      }
     }
 
     if (answerState == "incorrect") {
@@ -87,7 +80,7 @@ export const SentenceChallenge = ({
       reduceUserHearts();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answerState, length, isPreviousChallengeCompleting]);
+  }, [answerState, isPreviousChallengeCompleting]);
 
   if (index !== currentChallengeIndex) return null;
   if (challenge.type !== ChallengeType.SENTENCE) return null;

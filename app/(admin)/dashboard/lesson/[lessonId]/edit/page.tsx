@@ -67,7 +67,7 @@ const getChallengeQuestion = (
       question: string;
     }[];
     Sentence: Sentence[];
-  },
+  }
 ) => {
   switch (challenge?.type) {
     case ChallengeType.SELECT:
@@ -139,11 +139,6 @@ export default function Page({ params }: { params: { lessonId: string } }) {
       setChallenges(data);
     },
     onSuccess: () => {
-      // BUG: uncomment this to get rid of loading circle,
-      // removing this will make re-order (mutation) update twice
-      // but adding this will make loading circle appear for a second
-
-      // setChallenges(undefined);
       queryClient.refetchQueries({
         queryKey: ["lesson", lessonId],
       });
@@ -174,9 +169,7 @@ export default function Page({ params }: { params: { lessonId: string } }) {
       <div className="z-20">
         <CreateChallenge />
         {isError && (
-          <p className="text-red-500 text-sm font-medium mb-2">
-            {error.message}
-          </p>
+          <p className="text-red-500 text-sm font-medium mb-2">{error.message}</p>
         )}
       </div>
       <section className="z-10" ref={reorderConstraints}>
@@ -197,7 +190,7 @@ export default function Page({ params }: { params: { lessonId: string } }) {
                   key={challenge.id}
                   question={getChallengeQuestion(challenge)!}
                 />
-              ),
+              )
           )}
         </Reorder.Group>
       </section>

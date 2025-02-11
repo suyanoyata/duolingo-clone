@@ -22,7 +22,7 @@ export const Logout = () => {
       }}
       disabled={quitPending}
       className="mt-2 w-[200px]"
-      variant="secondary"
+      variant="destructive"
     >
       {!quitPending && "Вийти"}
       {quitPending && <LoadingCircle className="text-white" />}

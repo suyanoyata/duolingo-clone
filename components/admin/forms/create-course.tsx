@@ -92,7 +92,7 @@ export const CreateCourse = () => {
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 mt-4">
           {CreateCourseFields.map((field) => (
             <div key={field.name}>
               <Input

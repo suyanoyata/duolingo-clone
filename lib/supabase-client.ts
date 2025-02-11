@@ -1,4 +1,4 @@
-"use server";
+"server-only";
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -21,7 +21,7 @@ type UploadImageError = {
 
 export const upload = async (
   file: File,
-  challengeId: number,
+  challengeId: number
 ): Promise<UploadImageResponse> => {
   const imageUpload = await supabase()
     .storage.from("images")

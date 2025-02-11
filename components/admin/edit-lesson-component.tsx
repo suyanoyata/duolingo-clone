@@ -45,14 +45,14 @@ export const EditLessonComponent = ({ lesson }: { lesson: Lesson }) => {
         <Button
           variant="primary"
           className={cn(
-            "w-20 h-20 rounded-full relative border-b-[10px] hover:border-b-[8px]",
+            "w-20 h-20 rounded-full relative border-b-[10px] hover:border-b-[8px]"
           )}
         >
           <Pencil className="fill-zinc-50" size={42} strokeWidth={0} />
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <main>
+        <main className="mt-4">
           <div className="flex justify-between mt-6">
             <p className="text-sm font-semibold text-zinc-600">
               Відображати цей урок

@@ -12,9 +12,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="flex max-sm:flex-col-reverse max-sm:min-h-screen">
+    <>
       <Sidebar />
-      <main className="ml-[240px] max-sm:ml-0 flex-1">{children}</main>
-    </main>
+      <main className="flex-1 p-1.5 space-y-1.5 max-w-4xl mx-auto">
+        {children}
+      </main>
+    </>
   );
 }

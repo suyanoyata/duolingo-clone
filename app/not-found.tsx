@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <main className="flex">
       <Sidebar />
-      <main className="ml-[240px] max-sm:ml-0 flex-1">
+      <main className="max-sm:ml-0 flex-1">
         <div className="flex-1 flex flex-col items-center justify-center h-screen">
           <p className="text-sm text-zinc-700 font-medium mb-2">
             Здається цієї сторінки не існує.

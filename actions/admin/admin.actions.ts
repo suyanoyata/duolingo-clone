@@ -1,8 +1,15 @@
 "use server";
 
 import { verifySession } from "@/lib/session-helper";
-import { CourseCreateFormData } from "@/types/Forms";
-import { Challenge, Lesson, PrismaClient, Unit } from "@prisma/client";
+import { supabase } from "@/lib/supabase-client";
+import { shuffle } from "@/lib/utils";
+import {
+  ChallengeData,
+  CourseCreateFormData,
+  CreateBuildSentenceChallengeSchema,
+  CreateBuildSentenceFormData,
+} from "@/types/Forms";
+import { Challenge, ChallengeType, Lesson, PrismaClient, Sentence, Unit } from "@prisma/client";
 
 const db = new PrismaClient();
 
@@ -68,6 +75,116 @@ const createCourse = async (course: CourseCreateFormData) => {
   return {
     success: true,
     data: language,
+  };
+};
+
+const createSelectChallenge = async (challenge: Omit<ChallengeData, "correct">, lesson: number) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  const newChallenge = await db.challenge.create({
+    data: {
+      lessonId: lesson,
+      type: ChallengeType.SELECT,
+      Select: {
+        create: {
+          question: challenge.question,
+          options: challenge.options,
+          answer: challenge.answer,
+        },
+      },
+    },
+  });
+
+  return {
+    success: true,
+    data: newChallenge,
+  };
+};
+
+const createBuildSentenceChallenge = async (
+  challenge: CreateBuildSentenceFormData,
+  lessonId: number
+) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  const data = CreateBuildSentenceChallengeSchema.parse(challenge);
+
+  const payload: Omit<Sentence, "id" | "challengeId"> = {
+    correct: data.correct.split(" "),
+    question: data.question,
+    words: shuffle([...data.correct.split(" "), ...data.words.split(" ")]),
+  };
+
+  await db.challenge.create({
+    data: {
+      type: ChallengeType.SENTENCE,
+      lessonId,
+      Sentence: {
+        create: payload,
+      },
+    },
+  });
+
+  return data;
+};
+
+const createSelectImageChallenge = async (data: never, lesson: number) => {
+  /* this function should implement following:
+     1. create storage bucket for challenge
+     2. upload images
+     3. create database instance
+  */
+
+  const challenge = await db.challenge.create({
+    data: {
+      type: ChallengeType.SELECT_IMAGE,
+      lessonId: lesson,
+    },
+  });
+
+  await supabase().storage.createBucket(`lesson-${lesson}-challenge-${challenge.id}`);
+
+  await db.challenge.update({
+    where: {
+      id: challenge.id,
+    },
+    data: {
+      SelectImage: {
+        create: {
+          question: "",
+          correct: "Car",
+          words: {
+            createMany: {
+              data: [
+                {
+                  word: "Car",
+                  image: "https://example",
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return {
+    success: false,
+    data: [],
   };
 };
 
@@ -154,4 +271,12 @@ const reorderChallenges = async (challenges: Challenge[]) => {
   }
 };
 
-export { createCourse, editUnit, editLesson, reorderChallenges };
+export {
+  createCourse,
+  createSelectChallenge,
+  createBuildSentenceChallenge,
+  createSelectImageChallenge,
+  editUnit,
+  editLesson,
+  reorderChallenges,
+};

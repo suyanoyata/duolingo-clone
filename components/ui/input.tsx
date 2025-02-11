@@ -11,7 +11,7 @@ export interface InputProps
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, error, ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-[2px]">
+      <div className="flex flex-col gap-[2px] flex-1">
         {props.label && (
           <label
             htmlFor={props.label}
@@ -28,14 +28,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "flex h-11 w-full rounded-md border-input px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
             "bg-zinc-100 border-zinc-200 text-base text-zinc-800 font-medium rounded-xl border-[1.5px] focus:border-sky-500",
             className,
-            error && "border-red-500",
+            error && "border-red-500"
           )}
           ref={ref}
           {...props}
         />
       </div>
     );
-  },
+  }
 );
 Input.displayName = "Input";
 

@@ -13,18 +13,14 @@ export const SelectChallenge = ({
   lessonId,
   challenge,
   index,
-  length,
   isPreviousChallengeCompleting,
-  setCompleted,
 }: {
   lessonId: number;
   index: number;
   challenge: Challenge & {
     Select: Select[];
   };
-  length: number;
   isPreviousChallengeCompleting: boolean | undefined;
-  setCompleted: (value: boolean) => void;
 }) => {
   const { currentChallengeIndex, setCurrentChallengeIndex } = clientStore();
 
@@ -50,9 +46,6 @@ export const SelectChallenge = ({
 
   const correctAnswerDispatch = () => {
     setCurrentChallengeIndex(currentChallengeIndex + 1);
-    if (currentChallengeIndex + 1 === length) {
-      setCompleted(true);
-    }
   };
 
   useEffect(() => {
@@ -113,7 +106,7 @@ export const SelectChallenge = ({
                 "border-green-300 bg-green-400/20 hover:bg-green-400/20 text-green-400",
               answerState == "incorrect" &&
                 option === selected &&
-                "bg-red-400/20 text-red-400 hover:bg-red-400/20 border-red-300",
+                "bg-red-400/20 text-red-400 hover:bg-red-400/20 border-red-300"
             )}
             key={index}
           >

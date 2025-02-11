@@ -1,19 +1,25 @@
 "use client";
 
 import { getLesson } from "@/actions/courses/courses.action";
-import { LoadingOverlay } from "@/components/loading-overlay";
-import { SelectChallenge } from "@/components/units/select-challenge-component";
+
 import { clientStore } from "@/store/user-store";
 import { User } from "@prisma/client";
+
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { LessonHeader } from "@/components/units/lesson-header";
+
 import { AnimatePresence } from "framer-motion";
-import { LessonComplete } from "@/components/units/lesson-complete-component";
 import { useEffect, useState } from "react";
+
+import { LoadingOverlay } from "@/components/loading-overlay";
+import { LessonHeader } from "@/components/units/lesson-header";
+
 import { NoHeartsLeftModal } from "@/components/units/no-hearts-left-modal";
-import { SentenceChallenge } from "@/components/units/sentence-challenge-component";
+import { LessonComplete } from "@/components/units/lesson-complete-component";
+
+import { SelectChallenge } from "@/components/units/select-challenge-component";
 import { SelectImageChallenge } from "@/components/units/select-image-challenge-component";
+import { SentenceChallenge } from "@/components/units/sentence-challenge-component";
 
 export default function Page() {
   const { lessonId, isPreviousChallengeCompleting } = clientStore();
@@ -26,7 +32,6 @@ export default function Page() {
 
   const [localUser, setLocalUser] = useState<User | null>(null);
 
-  const [completed, setCompleted] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const { data, isPending } = useQuery({
@@ -62,27 +67,21 @@ export default function Page() {
           <>
             <SelectChallenge
               lessonId={lessonId}
-              setCompleted={setCompleted}
               isPreviousChallengeCompleting={isPreviousChallengeCompleting}
               index={index}
-              length={data.length}
               key={index}
               challenge={challenge}
             />
             <SentenceChallenge
               lessonId={lessonId}
-              setCompleted={setCompleted}
               index={index}
-              length={length}
               key={index}
               challenge={challenge}
             />
             <SelectImageChallenge
               lessonId={lessonId}
-              setCompleted={setCompleted}
               isPreviousChallengeCompleting={isPreviousChallengeCompleting}
               index={index}
-              length={data.length}
               key={index}
               challenge={challenge}
             />
@@ -90,7 +89,6 @@ export default function Page() {
         ))}
         <LessonComplete
           isPreviousChallengeCompleting={isPreviousChallengeCompleting!}
-          completed={completed}
           challengeLength={data.length}
         />
       </AnimatePresence>
