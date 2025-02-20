@@ -6,10 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createChallengeStore } from "@/store/create-lesson-store";
 
-import {
-  CreateBuildSentenceChallengeSchema,
-  CreateBuildSentenceFormData,
-} from "@/types/Forms";
+import { CreateBuildSentenceChallengeSchema, CreateBuildSentenceFormData } from "@/types/Forms";
 
 import { ChallengeType } from "@prisma/client";
 import { SentenceChallengePreview } from "@/components/admin/challenge-previews/build-sentence-challenge-preview";
@@ -73,8 +70,7 @@ export const CreateBuildSentenceChallenge = () => {
   const correct = watch("correct");
   const words = watch("words");
 
-  const canBePreviewed =
-    question.trim() != "" && correct.trim() != "" && words.trim() != "";
+  const canBePreviewed = question.trim() != "" && correct.trim() != "" && words.trim() != "";
 
   if (challengeType != ChallengeType.SENTENCE) return null;
 
@@ -103,6 +99,7 @@ export const CreateBuildSentenceChallenge = () => {
             </div>
           ))}
           <Button
+            type="submit"
             className="w-full"
             disabled={isPending}
             onClick={handleSubmit(onSubmit)}

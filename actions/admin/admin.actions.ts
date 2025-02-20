@@ -1,7 +1,7 @@
 "use server";
 
 import { verifySession } from "@/lib/session-helper";
-import { supabase } from "@/lib/supabase-client";
+import UploadService from "@/lib/supabase-client";
 import { shuffle } from "@/lib/utils";
 import {
   ChallengeData,
@@ -142,12 +142,20 @@ const createBuildSentenceChallenge = async (
   return data;
 };
 
-const createSelectImageChallenge = async (data: never, lesson: number) => {
+const createSelectImageChallenge = async (
+  data: Omit<ChallengeData, "correct">,
+  formData: FormData,
+  lesson: number
+) => {
   /* this function should implement following:
      1. create storage bucket for challenge
      2. upload images
      3. create database instance
   */
+
+  const images = formData.getAll("images");
+
+  console.log("start");
 
   const challenge = await db.challenge.create({
     data: {
@@ -156,7 +164,15 @@ const createSelectImageChallenge = async (data: never, lesson: number) => {
     },
   });
 
-  await supabase().storage.createBucket(`lesson-${lesson}-challenge-${challenge.id}`);
+  await UploadService.createBucket(challenge.id);
+
+  const wordImages = await Promise.all(
+    images.map(async (value) => {
+      if (value) {
+        return await UploadService.upload(challenge.id, value as unknown as File);
+      }
+    })
+  );
 
   await db.challenge.update({
     where: {
@@ -165,16 +181,14 @@ const createSelectImageChallenge = async (data: never, lesson: number) => {
     data: {
       SelectImage: {
         create: {
-          question: "",
-          correct: "Car",
+          question: data.question,
+          correct: data.answer,
           words: {
             createMany: {
-              data: [
-                {
-                  word: "Car",
-                  image: "https://example",
-                },
-              ],
+              data: wordImages.map((image, index) => ({
+                word: data.imageOptions ? data.imageOptions[index].word : "",
+                image: image ? image.data.publicUrl : "",
+              })),
             },
           },
         },

@@ -84,30 +84,28 @@ export const CreateBuildSentenceChallengeSchema = BaseChallengeSchema.extend({
 });
 
 export const CreateSelectImageChallengeSchema = BaseChallengeSchema.extend({
-  correct: z.string().min(4, {
+  answer: z.string().min(4, {
     message: "Відповідь занадто коротка",
   }),
-  words: z.array(z.object({ image: z.string(), word: z.string() })),
+  // FIXME: image should've used instanceof(File) instead of any type but it gives error
+  options: z.array(z.object({ image: z.any().nullable(), word: z.string() })),
 });
 
 export type CourseCreateFormData = z.infer<typeof CourseCreateSchema>;
 export type EditUnitFormData = z.infer<typeof EditUnitSchema>;
 
-export type CreateSelectChallengeFormData = z.infer<
-  typeof CreateSelectChallengeSchema
->;
-export type CreateBuildSentenceFormData = z.infer<
-  typeof CreateBuildSentenceChallengeSchema
->;
-export type CreateSelectImageFormData = z.infer<
-  typeof CreateSelectImageChallengeSchema
->;
+export type CreateSelectChallengeFormData = z.infer<typeof CreateSelectChallengeSchema>;
+export type CreateBuildSentenceFormData = z.infer<typeof CreateBuildSentenceChallengeSchema>;
+export type CreateSelectImageFormData = z.infer<typeof CreateSelectImageChallengeSchema>;
 
 export type ChallengeData = {
   type: ChallengeType;
   question: string;
   answer: string;
   options?: string[];
+  imageOptions?: {
+    word: string;
+  }[];
   words?: string[];
   correct: string[];
 };

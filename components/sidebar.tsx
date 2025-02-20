@@ -38,7 +38,7 @@ export function Sidebar() {
     <ShadSidebar collapsible="icon">
       <SidebarHeader>
         <h1 className="text-4xl font-extrabold text-zinc-800 select-none mb-3">fluenty</h1>
-        <SidebarMenuButton asChild variant={pathname == "/learn" ? "focused" : "default"}>
+        <SidebarMenuButton asChild variant={pathname.startsWith("/learn") ? "focused" : "default"}>
           <Link href="/learn">
             <GraduationCap />
             <span>Навчатись</span>

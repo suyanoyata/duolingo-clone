@@ -10,10 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { createChallengeStore } from "@/store/create-lesson-store";
 
-import {
-  CreateSelectChallengeFormData,
-  CreateSelectChallengeSchema,
-} from "@/types/Forms";
+import { CreateSelectChallengeFormData, CreateSelectChallengeSchema } from "@/types/Forms";
 import { ChallengeType } from "@prisma/client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,12 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 
 export const CreateSelectChallenge = () => {
   const { challengeType } = createChallengeStore();
@@ -65,8 +57,7 @@ export const CreateSelectChallenge = () => {
   const allOptionsProvided =
     options.every((option) => option.trim().length > 0) && options.length != 0;
 
-  const canBePreviewed =
-    question != "" && allOptionsProvided && options.includes(answer);
+  const canBePreviewed = question != "" && allOptionsProvided && options.includes(answer);
 
   const onSubmit = (data: CreateSelectChallengeFormData) => {
     mutate(data);
@@ -89,19 +80,12 @@ export const CreateSelectChallenge = () => {
               placeholder="Наприклад: Як перекладається слово 'літак'?"
             />
             {errors.question && (
-              <p className="text-red-500 font-medium text-sm">
-                {errors.question.message}
-              </p>
+              <p className="text-red-500 font-medium text-sm">{errors.question.message}</p>
             )}
             <div>
-              <p className="font-bold text-zinc-700 text-base select-none">
-                Правильна відповідь
-              </p>
+              <p className="font-bold text-zinc-700 text-base select-none">Правильна відповідь</p>
               <Select onValueChange={(value) => setValue("answer", value)}>
-                <SelectTrigger
-                  disabled={!allOptionsProvided}
-                  className="h-11 text-base"
-                >
+                <SelectTrigger disabled={!allOptionsProvided} className="h-11 text-base">
                   {answer != undefined ? answer : "Оберіть відповідь"}
                 </SelectTrigger>
                 <SelectContent>
@@ -150,9 +134,7 @@ export const CreateSelectChallenge = () => {
               <Plus size={18} />
             </Button>
             {errors.options && (
-              <p className="text-red-500 font-medium text-sm">
-                {errors.options.message}
-              </p>
+              <p className="text-red-500 font-medium text-sm">{errors.options.message}</p>
             )}
             <Button
               disabled={isPending || !canBePreviewed}
@@ -164,9 +146,7 @@ export const CreateSelectChallenge = () => {
               Створити завдання
             </Button>
             {errors.global && (
-              <p className="text-red-500 font-medium text-sm">
-                {errors.global.message}
-              </p>
+              <p className="text-red-500 font-medium text-sm">{errors.global.message}</p>
             )}
           </form>
         </TabsContent>

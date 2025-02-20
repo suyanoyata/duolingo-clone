@@ -10,9 +10,5 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <main className="absolute w-full top-0 left-0 h-screen bg-white">
-      {children}
-    </main>
-  );
+  return <main className="absolute w-full top-0 left-0 h-screen bg-white z-20">{children}</main>;
 }

@@ -19,10 +19,29 @@ type UploadImageError = {
   message: string;
 };
 
-export const upload = async (
-  file: File,
-  challengeId: number
-): Promise<UploadImageResponse> => {
+class UploadService {
+  public async createBucket(challengeId: number) {
+    return await supabase().storage.createBucket(`${challengeId}-lesson`);
+  }
+
+  public async upload(challengeId: number, file: File) {
+    const { error } = await supabase().storage.getBucket(`${challengeId}-lesson`);
+
+    if (error) {
+      throw new Error("Something went wrong while getting storage bucket.");
+    }
+
+    const id = crypto.randomUUID();
+
+    await supabase().storage.from(`${challengeId}-lesson`).upload(id, file);
+
+    return supabase().storage.from(`${challengeId}-lesson`).getPublicUrl(id);
+  }
+}
+
+export default new UploadService();
+
+export const upload = async (file: File, challengeId: number): Promise<UploadImageResponse> => {
   const imageUpload = await supabase()
     .storage.from("images")
     .upload(`${challengeId}-challenge-image`, file);
@@ -35,9 +54,7 @@ export const upload = async (
     };
   }
 
-  const image = supabase()
-    .storage.from("images")
-    .getPublicUrl(`${challengeId}-challenge-image`);
+  const image = supabase().storage.from("images").getPublicUrl(`${challengeId}-challenge-image`);
 
   return image;
 };
