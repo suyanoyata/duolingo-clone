@@ -14,6 +14,8 @@ export const UnitComponent = ({ unit }: { unit: Unit }) => {
     return <LoadingOverlay />;
   }
 
+  if (data.length == 0) return null;
+
   return (
     <section>
       <div className="bg-green-500 p-3 rounded-lg my-3">

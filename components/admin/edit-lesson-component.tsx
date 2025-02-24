@@ -1,9 +1,9 @@
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { editLesson } from "@/actions/admin/admin.actions";
+import { deleteLesson, editLesson } from "@/actions/admin/admin.actions";
 
 import Link from "next/link";
 
@@ -18,6 +18,7 @@ import { Lesson } from "@prisma/client";
 
 export const EditLessonComponent = ({ lesson }: { lesson: Lesson }) => {
   const queryClient = useQueryClient();
+
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["edit-lesson", lesson?.id],
     mutationFn: async () => {
@@ -42,6 +43,31 @@ export const EditLessonComponent = ({ lesson }: { lesson: Lesson }) => {
     },
     onError: () => {
       setChecked((prev) => !prev);
+    },
+  });
+
+  const {
+    mutate: removeLesson,
+    isPending: isDeletePending,
+    error: deleteError,
+  } = useMutation({
+    mutationKey: ["edit-lesson", lesson?.id],
+    mutationFn: async () => {
+      const result = await deleteLesson(lesson.id);
+
+      if (!result.success) {
+        throw {
+          message: result.message,
+        };
+      }
+
+      return result.data;
+    },
+    onSuccess: () => {
+      setOpen(false);
+      queryClient.refetchQueries({
+        queryKey: ["unit-lessons", lesson.unitId],
+      });
     },
   });
 
@@ -74,7 +100,17 @@ export const EditLessonComponent = ({ lesson }: { lesson: Lesson }) => {
           <Button className="w-full mt-4" variant="primary" asChild>
             <Link href={`/dashboard/lesson/${lesson.id}/edit`}>Перейти до завдань</Link>
           </Button>
+          <Button
+            disabled={isDeletePending}
+            onClick={() => removeLesson()}
+            className="w-full mt-2 gap-1"
+            variant="destructive"
+          >
+            <Trash2 size={18} />
+            Видалити урок
+          </Button>
           {isError && <FieldError className="mt-2">{error?.message}</FieldError>}
+          {deleteError && <FieldError className="mt-2">{deleteError.message}</FieldError>}
         </main>
       </DialogContent>
     </Dialog>

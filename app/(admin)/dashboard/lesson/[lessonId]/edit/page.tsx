@@ -16,6 +16,7 @@ import { Challenge, ChallengeType, Select, Sentence } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { CreateChallenge } from "@/components/admin/forms/create-challenge";
 import { toast } from "sonner";
+import { FieldError } from "@/components/ui/field-error";
 
 // #region helper components
 const DisplayText = ({ children }: { children: React.ReactNode }) => {
@@ -189,7 +190,7 @@ export default function Page({ params }: { params: { lessonId: string } }) {
     <main className="my-2 mx-2">
       <div className="z-20">
         <CreateChallenge />
-        {isError && <p className="text-red-500 text-sm font-medium mb-2">{error.message}</p>}
+        {isError && <FieldError>{error.message}</FieldError>}
       </div>
       <section className="z-10" ref={reorderConstraints}>
         <Reorder.Group

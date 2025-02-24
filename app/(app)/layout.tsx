@@ -1,4 +1,6 @@
 import { Sidebar } from "@/components/sidebar";
+import { SidebarButtonTrigger } from "@/components/sidebar-button";
+
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,6 +17,7 @@ export default function RootLayout({
     <>
       <Sidebar />
       <main className="flex-1 p-1.5 space-y-1.5 max-w-4xl mx-auto">
+        <SidebarButtonTrigger />
         {children}
       </main>
     </>

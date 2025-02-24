@@ -8,6 +8,7 @@ import {
   CourseCreateFormData,
   CreateBuildSentenceChallengeSchema,
   CreateBuildSentenceFormData,
+  EditUnitFormData,
 } from "@/types/Forms";
 import { Challenge, ChallengeType, Lesson, PrismaClient, Sentence, Unit } from "@prisma/client";
 
@@ -197,6 +198,37 @@ const createSelectImageChallenge = async (
   return data;
 };
 
+const createUnit = async (languageCode: string, unit: EditUnitFormData) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  const unitsLength = await db.unit.count({
+    where: {
+      languageCode,
+    },
+  });
+
+  const newUnit = await db.unit.create({
+    data: {
+      languageCode,
+      name: unit.name,
+      description: unit.description,
+      order: unitsLength + 1,
+    },
+  });
+
+  return {
+    success: true,
+    data: newUnit,
+  };
+};
+
 const editUnit = async (unit: Unit) => {
   const permitted = await isPermittedAction();
 
@@ -247,6 +279,28 @@ const createLesson = async (unitId: number) => {
   });
 };
 
+const deleteLesson = async (lessonId: Lesson["id"]) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  await db.lesson.delete({
+    where: {
+      id: lessonId,
+    },
+  });
+
+  return {
+    success: true,
+    data: null,
+  };
+};
+
 const editLesson = async (lesson: Lesson) => {
   const permitted = await isPermittedAction();
 
@@ -268,7 +322,7 @@ const editLesson = async (lesson: Lesson) => {
   if (challenges < 1) {
     return {
       success: false,
-      message: "Урок повинен містити хоча би одне завдання",
+      message: "Урок повинен містити хоча би одне завдання, щоб відображатись.",
     };
   }
 
@@ -373,8 +427,10 @@ export {
   createSelectChallenge,
   createBuildSentenceChallenge,
   createSelectImageChallenge,
+  createUnit,
   editUnit,
   createLesson,
+  deleteLesson,
   editLesson,
   deleteChallenge,
   reorderChallenges,

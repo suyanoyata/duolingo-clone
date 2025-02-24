@@ -2,6 +2,7 @@
 
 import { getUnits } from "@/actions/courses/courses.action";
 import { UnitComponent } from "@/components/admin/unit-header";
+import { CreateUnitComponent } from "@/components/create-unit-component";
 import { LoadingOverlay } from "@/components/loading-overlay";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -34,12 +35,9 @@ export default function Page({ params }: { params: { languageCode: string } }) {
         </Button>
       </header>
       {units.map((unit) => (
-        <UnitComponent
-          language={params.languageCode}
-          unit={unit}
-          key={unit.id}
-        />
+        <UnitComponent language={params.languageCode} unit={unit} key={unit.id} />
       ))}
+      <CreateUnitComponent languageCode={params.languageCode} />
     </div>
   );
 }
