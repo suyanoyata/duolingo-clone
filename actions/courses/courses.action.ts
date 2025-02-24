@@ -185,7 +185,6 @@ const increaseLessonProgress = async (lessonId: number, languageCode: string) =>
   if (unit!.Lesson.length === 0) {
     const unit = await getFirstLessonFromNextUnit(lesson!.unitId);
 
-    console.log("lessons in same unit no more, setting next unit");
     // set new unit and lesson
     await db.progress.update({
       where: {
@@ -204,7 +203,6 @@ const increaseLessonProgress = async (lessonId: number, languageCode: string) =>
     });
   } else {
     // set next lesson from same unit
-    console.log("setting next lesson from same unit");
     await db.progress.update({
       where: {
         userId_languageCode: {

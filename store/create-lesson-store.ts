@@ -2,6 +2,8 @@ import { ChallengeType } from "@prisma/client";
 import { create } from "zustand";
 
 interface UserStore {
+  open: boolean;
+  setOpen: (state: boolean) => void;
   challengeType: ChallengeType | undefined;
   question: string;
   answer: string;
@@ -13,6 +15,8 @@ interface UserStore {
 }
 
 export const createChallengeStore = create<UserStore>((set) => ({
+  open: false,
+  setOpen: (open) => set({ open }),
   challengeType: undefined,
   question: "",
   answer: "",

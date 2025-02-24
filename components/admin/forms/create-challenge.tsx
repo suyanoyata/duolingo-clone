@@ -15,8 +15,7 @@ import { createChallengeStore } from "@/store/create-lesson-store";
 import { useMutation } from "@tanstack/react-query";
 
 export const CreateChallenge = () => {
-  const [open, setOpen] = useState(false);
-  const { setChallengeType } = createChallengeStore();
+  const { setChallengeType, open, setOpen } = createChallengeStore();
 
   const [step, setStep] = useState(0);
 
@@ -26,7 +25,9 @@ export const CreateChallenge = () => {
 
   useMutation({
     mutationKey: ["create-challenge"],
-    onSuccess: () => setOpen(false),
+    onSuccess: () => {
+      setOpen(false);
+    },
   });
 
   useEffect(() => {
@@ -50,12 +51,7 @@ export const CreateChallenge = () => {
       </DialogTrigger>
       <DialogContent className="flex flex-col overflow-hidden">
         <div className="inline-flex items-center flex-row gap-2 font-semibold text-zinc-500 -mt-3">
-          <Button
-            disabled={step == 0}
-            onClick={stepBack}
-            variant="ghost"
-            size="sm"
-          >
+          <Button disabled={step == 0} onClick={stepBack} variant="ghost" size="sm">
             <ChevronLeft className="text-zinc-400" />
           </Button>
           Створити завдання

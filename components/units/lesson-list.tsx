@@ -14,9 +14,7 @@ export const LessonList = ({
     queryKey: ["current-user-courses"],
   });
 
-  const progress = data?.filter(
-    (progress) => progress.languageCode === languageCode,
-  )[0];
+  const progress = data?.filter((progress) => progress.languageCode === languageCode)[0];
 
   if (!data || !progress) {
     return <LoadingOverlay />;
@@ -27,9 +25,7 @@ export const LessonList = ({
       {lessons.map((lesson, index) => (
         <LessonComponent
           isCurrentLesson={progress.lastCompletedLesson == lesson.id}
-          isLessonAvailable={
-            progress.lastCompletedLesson! >= lesson.id || index === 0
-          }
+          isLessonAvailable={progress.lastCompletedLesson! >= lesson.id || index === 0}
           isPreviousLesson={progress.lastCompletedLesson! - 1 >= lesson.id}
           isUnitLocked={progress.unitId < lesson.unitId}
           key={lesson.id}

@@ -8,10 +8,7 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import ReactConfetti from "react-confetti";
 import { useWindowDimensions } from "@/hooks/useWindowDimensions";
-import {
-  increaseHeart,
-  increaseLessonProgress,
-} from "@/actions/courses/courses.action";
+import { increaseHeart, increaseLessonProgress } from "@/actions/courses/courses.action";
 
 export const LessonComplete = ({
   challengeLength,
@@ -42,7 +39,6 @@ export const LessonComplete = ({
   };
 
   useEffect(() => {
-    console.log(currentChallengeIndex, challengeLength);
     lessonCompletedCallback();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChallengeIndex, challengeLength]);
@@ -81,9 +77,7 @@ export const LessonComplete = ({
           recycle={false}
           className="z-20"
         />
-        <h1 className="text-2xl font-extrabold text-zinc-800">
-          Ви пройшли урок
-        </h1>
+        <h1 className="text-2xl font-extrabold text-zinc-800">Ви пройшли урок</h1>
         <div className="flex flex-wrap gap-2 justify-center">
           <ButtonTitle title="Отримано балів">
             {isPreviousChallengeCompleting ? "+0" : "+15"}

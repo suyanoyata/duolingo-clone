@@ -155,8 +155,6 @@ const createSelectImageChallenge = async (
 
   const images = formData.getAll("images");
 
-  console.log("start");
-
   const challenge = await db.challenge.create({
     data: {
       type: ChallengeType.SELECT_IMAGE,
@@ -196,10 +194,7 @@ const createSelectImageChallenge = async (
     },
   });
 
-  return {
-    success: false,
-    data: [],
-  };
+  return data;
 };
 
 const editUnit = async (unit: Unit) => {
@@ -228,6 +223,30 @@ const editUnit = async (unit: Unit) => {
   };
 };
 
+const createLesson = async (unitId: number) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return permitted;
+  }
+
+  const lessonsLength = (
+    await db.lesson.findMany({
+      where: {
+        unitId,
+      },
+    })
+  ).length;
+
+  return await db.lesson.create({
+    data: {
+      unitId,
+      isLessonVisible: false,
+      order: lessonsLength + 1,
+    },
+  });
+};
+
 const editLesson = async (lesson: Lesson) => {
   const permitted = await isPermittedAction();
 
@@ -235,6 +254,21 @@ const editLesson = async (lesson: Lesson) => {
     return {
       success: false,
       message: permitted.message,
+    };
+  }
+
+  const challenges = (
+    await db.challenge.findMany({
+      where: {
+        lessonId: lesson.id,
+      },
+    })
+  ).length;
+
+  if (challenges < 1) {
+    return {
+      success: false,
+      message: "Урок повинен містити хоча би одне завдання",
     };
   }
 
@@ -250,6 +284,55 @@ const editLesson = async (lesson: Lesson) => {
   return {
     success: true,
     data: updatedLesson,
+  };
+};
+
+const deleteChallenge = async (challenge: Challenge) => {
+  let hideLesson = false;
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return permitted;
+  }
+
+  const challenges = await db.challenge.findMany({
+    where: {
+      lessonId: challenge.lessonId,
+    },
+  });
+
+  const lesson = await db.lesson.findFirst({
+    where: {
+      id: challenge.lessonId,
+    },
+  });
+
+  if (lesson?.isLessonVisible) {
+    if (challenges.length - 1 <= 0) {
+      await db.lesson.update({
+        where: {
+          id: challenge.lessonId,
+        },
+        data: {
+          isLessonVisible: false,
+        },
+      });
+
+      hideLesson = true;
+    }
+  }
+
+  await db.challenge.delete({
+    where: {
+      id: challenge.id,
+    },
+  });
+
+  return {
+    success: true,
+    data: {
+      hideLesson,
+    },
   };
 };
 
@@ -291,6 +374,8 @@ export {
   createBuildSentenceChallenge,
   createSelectImageChallenge,
   editUnit,
+  createLesson,
   editLesson,
+  deleteChallenge,
   reorderChallenges,
 };

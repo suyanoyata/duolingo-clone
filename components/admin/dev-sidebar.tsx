@@ -39,36 +39,38 @@ export const DevSidebar = () => {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <h1 className="text-4xl font-extrabold text-zinc-800 select-none mb-3">fluenty</h1>
-        <SidebarMenuButton
-          asChild
-          variant={pathname == "/dashboard/courses" ? "focused" : "default"}
-        >
-          <Link href="/dashboard/courses">
-            <FlaskConical />
-            <span>Курси</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarHeader>
-      <SidebarContent />
-      <SidebarFooter className="space-y-1">
-        <SidebarMenuButton asChild variant={pathname == "/settings" ? "focused" : "default"}>
-          <Link href="/settings">
-            <Settings />
-            <span>Налаштування</span>
-          </Link>
-        </SidebarMenuButton>
-        <SidebarMenuButton
-          asChild
-          variant={pathname == `/profile/${data.nickname}` ? "focused" : "default"}
-        >
-          <Link href={`/profile/${data.nickname}`}>
-            <User />
-            <span>Профіль</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarFooter>
+      <SidebarContent className="bg-white">
+        <SidebarHeader>
+          <h1 className="text-4xl font-extrabold text-zinc-800 select-none mb-3">fluenty</h1>
+          <SidebarMenuButton
+            asChild
+            variant={pathname == "/dashboard/courses" ? "focused" : "default"}
+          >
+            <Link href="/dashboard/courses">
+              <FlaskConical />
+              <span>Курси</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarHeader>
+        <SidebarContent />
+        <SidebarFooter className="space-y-1">
+          <SidebarMenuButton asChild variant={pathname == "/settings" ? "focused" : "default"}>
+            <Link href="/settings">
+              <Settings />
+              <span>Налаштування</span>
+            </Link>
+          </SidebarMenuButton>
+          <SidebarMenuButton
+            asChild
+            variant={pathname == `/profile/${data.nickname}` ? "focused" : "default"}
+          >
+            <Link href={`/profile/${data.nickname}`}>
+              <User />
+              <span>Профіль</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarFooter>
+      </SidebarContent>
     </Sidebar>
   );
 };

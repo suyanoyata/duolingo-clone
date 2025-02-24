@@ -18,6 +18,7 @@ export const LessonComponent = ({
     <div
       style={{
         left: `${position}px`,
+        position: "relative",
       }}
     >
       <EditLessonComponent lesson={lesson!} />

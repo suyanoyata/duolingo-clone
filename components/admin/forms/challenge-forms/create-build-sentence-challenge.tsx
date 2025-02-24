@@ -1,7 +1,12 @@
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { toast } from "sonner";
+
 import { useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createChallengeStore } from "@/store/create-lesson-store";
@@ -10,10 +15,8 @@ import { CreateBuildSentenceChallengeSchema, CreateBuildSentenceFormData } from 
 
 import { ChallengeType } from "@prisma/client";
 import { SentenceChallengePreview } from "@/components/admin/challenge-previews/build-sentence-challenge-preview";
-import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
+
 import { createBuildSentenceChallenge } from "@/actions/admin/admin.actions";
-import { useParams } from "next/navigation";
 
 const CreateBuildSentenceChallengeFields: Array<{
   name: keyof CreateBuildSentenceFormData;
@@ -38,7 +41,7 @@ const CreateBuildSentenceChallengeFields: Array<{
 ];
 
 export const CreateBuildSentenceChallenge = () => {
-  const { challengeType } = createChallengeStore();
+  const { challengeType, setOpen } = createChallengeStore();
   const { lessonId } = useParams();
 
   const {
@@ -59,10 +62,13 @@ export const CreateBuildSentenceChallenge = () => {
     mutationKey: ["create-challenge"],
     mutationFn: async (data: CreateBuildSentenceFormData) =>
       await createBuildSentenceChallenge(data, Number(lessonId)),
+    onSuccess: () => {
+      setOpen(false);
+      toast.success("Завдання створено");
+    },
   });
 
   const onSubmit = (data: CreateBuildSentenceFormData) => {
-    console.log(data);
     mutate(data);
   };
 

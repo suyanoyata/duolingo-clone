@@ -19,9 +19,10 @@ import { useMutation } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { toast } from "sonner";
 
 export const CreateSelectChallenge = () => {
-  const { challengeType } = createChallengeStore();
+  const { challengeType, setOpen } = createChallengeStore();
 
   const {
     register,
@@ -46,6 +47,10 @@ export const CreateSelectChallenge = () => {
         },
         Number(params.lessonId)
       ),
+    onSuccess: () => {
+      setOpen(false);
+      toast.success("Завдання створено");
+    },
   });
 
   const question = watch("question");

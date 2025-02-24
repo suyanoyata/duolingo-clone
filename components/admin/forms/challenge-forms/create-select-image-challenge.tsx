@@ -16,6 +16,8 @@ import { CreateSelectImageChallengeSchema, CreateSelectImageFormData } from "@/t
 import { useMutation } from "@tanstack/react-query";
 import { createSelectImageChallenge } from "@/actions/admin/admin.actions";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 
 const CreateSelectImageChallengeFields: Array<{
   name: keyof CreateSelectImageFormData;
@@ -27,24 +29,18 @@ const CreateSelectImageChallengeFields: Array<{
     label: "Запитання",
     placeholder: 'Наприклад: Як перекладається слово "літак?"',
   },
-  {
-    name: "answer",
-    label: "Правильна відповідь",
-    placeholder: "Введіть правильну відповідь",
-  },
 ];
 
 export const CreateSelectImageChallenge = () => {
   const params = useParams();
 
-  const { challengeType } = createChallengeStore();
+  const { challengeType, setOpen } = createChallengeStore();
 
   const { mutate, isPending, isError } = useMutation({
     mutationKey: ["create-challenge"],
     mutationFn: async (data: CreateSelectImageFormData) => {
       const formData = new FormData();
 
-      console.log(data);
       data.options.forEach((file) => {
         const image = file.image as unknown as File;
         if (!image) return;
@@ -64,6 +60,10 @@ export const CreateSelectImageChallenge = () => {
         Number(params.lessonId)
       );
     },
+    onSuccess: () => {
+      setOpen(false);
+      toast.success("Завдання створено");
+    },
   });
 
   const {
@@ -76,22 +76,25 @@ export const CreateSelectImageChallenge = () => {
     formState: { errors },
   } = useForm<CreateSelectImageFormData>({
     defaultValues: {
-      question: "test",
-      answer: "test",
-      options: [{ image: null, word: "test" }],
+      options: [{ image: null, word: "" }],
     },
     resolver: zodResolver(CreateSelectImageChallengeSchema),
   });
-
-  // useEffect(() => {
-  //   console.log(errors);
-  // }, [errors]);
 
   const onSubmit = (data: CreateSelectImageFormData) => {
     mutate(data);
   };
 
-  const canBePreviewed = true;
+  const options = watch("options");
+  const question = watch("question");
+  const answer = watch("answer");
+
+  const allOptionsProvided =
+    options.every((option) => option.image != null && option.word.trim().length > 0) &&
+    options.length != 0;
+
+  const canBePreviewed =
+    allOptionsProvided && question.trim().length > 4 && answer && answer.trim().length > 4;
 
   function updateWord(index: number, file: File) {
     const values = getValues();
@@ -99,7 +102,6 @@ export const CreateSelectImageChallenge = () => {
     const newItems = [...values.options];
 
     newItems[index].image = file;
-    console.log(newItems);
 
     setValue("options", newItems);
   }
@@ -128,6 +130,22 @@ export const CreateSelectImageChallenge = () => {
               )}
             </div>
           ))}
+          <div>
+            <p className="font-bold text-zinc-700 text-base select-none">Правильна відповідь</p>
+            <Select onValueChange={(value) => setValue("answer", value)}>
+              <SelectTrigger disabled={!allOptionsProvided} className="h-11 text-base">
+                {answer != undefined ? answer : "Оберіть відповідь"}
+              </SelectTrigger>
+              <SelectContent>
+                {allOptionsProvided &&
+                  options.map((option, index) => (
+                    <SelectItem key={index} value={option.word}>
+                      {option.word}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
           {watch("options").map((_, index) => (
             <section key={index}>
               <label
@@ -142,9 +160,6 @@ export const CreateSelectImageChallenge = () => {
                 render={({ field }) => (
                   <section>
                     <div className="flex gap-2">
-                      {/* <label htmlFor={`${index}-image`}>
-                        <Button type="button">Зображення</Button>
-                      </label> */}
                       <Input
                         id={`${index}-image`}
                         accept="image/*"

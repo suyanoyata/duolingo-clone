@@ -1,18 +1,24 @@
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { useEffect, useState } from "react";
 import { clientStore } from "@/store/user-store";
 import { useRouter } from "next/navigation";
 
 export const QuitLessonModal = () => {
   const [open, setOpen] = useState(false);
   const { lastLanguageCode } = clientStore();
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", (e) => {
+      setOpen(true);
+      e.preventDefault();
+    });
+
+    return () => {
+      window.removeEventListener("beforeunload", () => {});
+    };
+  }, []);
 
   const router = useRouter();
 
@@ -27,8 +33,7 @@ export const QuitLessonModal = () => {
         <DialogTitle>Зачекайте!</DialogTitle>
         <div className="flex flex-col gap-3">
           <p className="text-zinc-600 font-semibold text-center">
-            Ви справді хочете закінчити урок? Вам доведеться проходити його
-            спочатку.
+            Ви справді хочете закінчити урок? Вам доведеться проходити його спочатку.
           </p>
           <Button
             variant="secondary"

@@ -5,13 +5,7 @@ import { getLessons } from "@/actions/courses/courses.action";
 import { LoadingOverlay } from "../loading-overlay";
 import { EditUnit } from "./forms/edit-unit-data";
 
-export const UnitComponent = ({
-  unit,
-  language,
-}: {
-  unit: Unit;
-  language: string;
-}) => {
+export const UnitComponent = ({ unit, language }: { unit: Unit; language: string }) => {
   const { data, isPending } = useQuery({
     queryKey: ["unit-lessons", unit.id],
     queryFn: async () =>
@@ -32,7 +26,7 @@ export const UnitComponent = ({
         <h2 className="text-xl font-extrabold text-white">{unit.name}</h2>
         <p className="text-sm text-white font-medium">{unit.description}</p>
       </div>
-      <LessonList languageCode={unit.languageCode} lessons={data} />
+      <LessonList unitId={unit.id} lessons={data} />
     </section>
   );
 };

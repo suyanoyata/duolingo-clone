@@ -1,10 +1,7 @@
 "use client";
 
 import { getLanguages } from "@/actions/language.action";
-import {
-  getCurrentUserCourses,
-  setActiveCourse,
-} from "@/actions/users/user.action";
+import { getCurrentUserCourses, setActiveCourse } from "@/actions/users/user.action";
 import { CountryFlag } from "@/components/country-flag";
 import { LoadingOverlay } from "@/components/loading-overlay";
 import { Button } from "@/components/ui/button";
@@ -15,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 export default function Page({ params }: { params: { code: string } }) {
   const queryClient = useQueryClient();
@@ -28,25 +25,21 @@ export default function Page({ params }: { params: { code: string } }) {
     setPreviousChallengeCompleting,
   } = clientStore();
 
-  const { data: currentCourseInfo, isPending: isCurrentCourseLoading } =
-    useQuery({
-      queryKey: ["current-user-courses"],
-      queryFn: async () => await getCurrentUserCourses(),
-    });
+  const { data: currentCourseInfo, isPending: isCurrentCourseLoading } = useQuery({
+    queryKey: ["current-user-courses"],
+    queryFn: async () => await getCurrentUserCourses(),
+  });
 
-  const { data: languageCourses, isPending: isLanguageCoursesLoading } =
-    useQuery({
-      queryKey: ["language-courses"],
-      queryFn: async () => await getLanguages(),
-    });
+  const { data: languageCourses, isPending: isLanguageCoursesLoading } = useQuery({
+    queryKey: ["language-courses"],
+    queryFn: async () => await getLanguages(),
+  });
 
   const { data: userData, isPending: isUserDataPending } = useQuery<User>({
     queryKey: ["user"],
   });
 
-  const course = currentCourseInfo?.find(
-    (course) => course.languageCode === params.code,
-  );
+  const course = currentCourseInfo?.find((course) => course.languageCode === params.code);
 
   const courseData = languageCourses?.find((languageCourse) => {
     return languageCourse.code === course?.languageCode;
@@ -73,17 +66,12 @@ export default function Page({ params }: { params: { code: string } }) {
     }
   }, [params.code, course]);
 
-  if (
-    isCurrentCourseLoading ||
-    isLanguageCoursesLoading ||
-    isUserDataPending ||
-    !userData
-  ) {
+  if (isCurrentCourseLoading || isLanguageCoursesLoading || isUserDataPending || !userData) {
     return <LoadingOverlay />;
   }
 
   if (!course || !courseData) {
-    toast.error("Ви не підписані на цей курс");
+    // toast.error("Ви не підписані на цей курс");
     return router.push("/learn") as unknown as React.ReactNode;
   }
 

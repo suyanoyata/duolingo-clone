@@ -10,12 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
@@ -502,8 +497,7 @@ const sidebarMenuButtonVariants = cva(
     variants: {
       variant: {
         default: "bg-white text-zinc-500 duration-200 hover:bg-zinc-100",
-        focused:
-          "bg-sky-50 outline outline-2 outline-sky-200 text-sky-500 max-sm:outline-none max-sm:bg-transparent",
+        focused: "bg-sky-50 outline outline-2 outline-sky-200 text-sky-500",
       },
       size: {
         default: "h-11 px-4 py-2",
@@ -647,9 +641,7 @@ const SidebarMenuSkeleton = React.forwardRef<
       className={cn("rounded-md h-8 flex gap-2 px-2 items-center", className)}
       {...props}
     >
-      {showIcon && (
-        <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />
-      )}
+      {showIcon && <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />}
       <Skeleton
         className="h-4 flex-1 max-w-[--skeleton-width]"
         data-sidebar="menu-skeleton-text"
