@@ -28,9 +28,7 @@ export const SelectCourse = () => {
   useEffect(() => {
     if (courseId === 0) return;
 
-    const course = currentCoursesInfo?.filter(
-      (course) => course.courseId === courseId,
-    );
+    const course = currentCoursesInfo?.filter((course) => course.courseId === courseId);
 
     if (course && course.length !== 0) {
       router.push(`/learn/${course[0].languageCode}`);
@@ -40,9 +38,7 @@ export const SelectCourse = () => {
   }, [courseId, currentCoursesInfo, data, router]);
 
   const notSubscribedCourses = data?.filter((course) => {
-    const courseInfo = currentCoursesInfo?.find(
-      (courseInfo) => courseInfo.courseId === course.id,
-    );
+    const courseInfo = currentCoursesInfo?.find((courseInfo) => courseInfo.courseId === course.id);
     return !courseInfo;
   });
 
@@ -67,9 +63,7 @@ export const SelectCourse = () => {
       />
       {currentCoursesInfo.length !== 0 && (
         <>
-          <h1 className="text-2xl max-sm:text-xl font-extrabold mb-2 text-zinc-600">
-            Мої курси
-          </h1>
+          <h1 className="text-2xl max-sm:text-xl font-extrabold mb-2 text-zinc-600">Мої курси</h1>
           <div className="flex gap-4 mb-2 flex-wrap max-w-[790px]">
             {currentCoursesInfo?.map((course) => (
               <CourseComponent
@@ -88,9 +82,9 @@ export const SelectCourse = () => {
           </div>
         </>
       )}
-      <h1 className="text-2xl max-sm:text-xl font-extrabold mb-2 text-zinc-600">
-        Всі курси
-      </h1>
+      {notSubscribedCourses.length > 0 && (
+        <h1 className="text-2xl max-sm:text-xl font-extrabold mb-2 text-zinc-600">Всі курси</h1>
+      )}
       <div className="flex gap-4 flex-wrap max-w-[790px]">
         {notSubscribedCourses!.map((language) => (
           <CourseComponent

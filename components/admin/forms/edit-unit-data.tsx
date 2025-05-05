@@ -4,15 +4,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 
+import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
 import { LoadingCircle } from "@/components/loading-overlay";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
 import { Unit } from "@prisma/client";
 import { EditUnitFormData, EditUnitSchema } from "@/types/Forms";
+
+import { deleteUnit, editUnit } from "@/actions/admin/admin.actions";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { editUnit } from "@/actions/admin/admin.actions";
 
 const editUnitFields = [
   {
@@ -27,13 +32,7 @@ const editUnitFields = [
   },
 ];
 
-export const EditUnit = ({
-  unit,
-  language,
-}: {
-  unit: Unit;
-  language: string;
-}) => {
+export const EditUnit = ({ unit, language }: { unit: Unit; language: string }) => {
   const [open, setOpen] = useState(false);
 
   const queryClient = useQueryClient();
@@ -88,6 +87,19 @@ export const EditUnit = ({
     mutate(data);
   };
 
+  const { mutateAsync: removeUnit, isPending: deleteUnitPending } = useMutation({
+    mutationKey: ["delete-unit"],
+    mutationFn: async () => await deleteUnit(unit.id),
+    onSuccess: () => {
+      queryClient.setQueryData(["units-list", language], (prev: Unit[]) =>
+        prev.filter((x) => x.id != unit.id)
+      );
+      queryClient.refetchQueries({
+        queryKey: ["units-list", language],
+      });
+    },
+  });
+
   useEffect(() => {
     const { unsubscribe } = watch(() => {
       clearErrors("root");
@@ -97,11 +109,27 @@ export const EditUnit = ({
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="absolute top-2 right-2" variant="game">
-          Редагувати
+      <div className="flex items-center gap-1 justify-end absolute top-2 right-2">
+        <Button
+          disabled={deleteUnitPending}
+          onClick={() => {
+            toast.promise(removeUnit, {
+              loading: "Видаляємо урок",
+              success: "Урок видалено",
+              error: "Не вдалось видалити урок",
+            });
+          }}
+          size="sm"
+          variant="destructive"
+        >
+          <Trash2 size={16} />
         </Button>
-      </DialogTrigger>
+        <DialogTrigger asChild>
+          <Button size="sm" variant="game">
+            Редагувати
+          </Button>
+        </DialogTrigger>
+      </div>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
           {editUnitFields.map((field) => (
@@ -118,12 +146,7 @@ export const EditUnit = ({
               )}
             </div>
           ))}
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="w-full"
-            variant="primary"
-          >
+          <Button type="submit" disabled={isPending} className="w-full" variant="primary">
             {!isPending && "Зберегти"}
             {isPending && <LoadingCircle className="text-white" />}
           </Button>

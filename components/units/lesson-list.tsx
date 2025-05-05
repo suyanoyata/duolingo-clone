@@ -23,26 +23,27 @@ export const LessonList = ({
   const isLessonAvailable = (lesson: Lesson, index: number) =>
     progress.lastCompletedLesson! >= lesson.id || index === 0;
 
-  const lessonAfterLastCompletedLesson = lessons.find((x) => x.id > progress.lastCompletedLesson!);
+  const lessonAfterLastCompletedLesson = lessons.find((x) => x.id >= progress.lastCompletedLesson!);
 
   return (
     <div className="flex flex-col gap-8 items-center">
       {lessons.map((lesson, index) => (
-        <LessonComponent
-          isCurrentLesson={
-            progress.lastCompletedLesson == lesson.id ||
-            lessonAfterLastCompletedLesson?.id == lesson.id
-          }
-          isLessonAvailable={
-            isLessonAvailable(lesson, index) || lessonAfterLastCompletedLesson?.id == lesson.id
-          }
-          isPreviousLesson={progress.lastCompletedLesson! - 1 >= lesson.id}
-          isUnitLocked={progress.unitId < lesson.unitId}
-          key={lesson.id}
-          id={lesson.id}
-          index={index}
-          length={lessons.length}
-        />
+        <>
+          <LessonComponent
+            isCurrentLesson={
+              lessonAfterLastCompletedLesson?.id == lesson.id && isLessonAvailable(lesson, index)
+            }
+            isLessonAvailable={
+              isLessonAvailable(lesson, index) || lessonAfterLastCompletedLesson?.id == lesson.id
+            }
+            isPreviousLesson={progress.lastCompletedLesson! - 1 >= lesson.id}
+            isUnitLocked={progress.unitId < lesson.unitId}
+            key={lesson.id}
+            id={lesson.id}
+            index={index}
+            length={lessons.length}
+          />
+        </>
       ))}
     </div>
   );

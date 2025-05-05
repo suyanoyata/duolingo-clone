@@ -229,6 +229,28 @@ const createUnit = async (languageCode: string, unit: EditUnitFormData) => {
   };
 };
 
+const deleteUnit = async (unitId: Unit["id"]) => {
+  const permitted = await isPermittedAction();
+
+  if (!permitted.success) {
+    return {
+      success: false,
+      message: permitted.message,
+    };
+  }
+
+  await db.unit.delete({
+    where: {
+      id: unitId,
+    },
+  });
+
+  return {
+    success: true,
+    data: null,
+  };
+};
+
 const editUnit = async (unit: Unit) => {
   const permitted = await isPermittedAction();
 
@@ -428,6 +450,7 @@ export {
   createBuildSentenceChallenge,
   createSelectImageChallenge,
   createUnit,
+  deleteUnit,
   editUnit,
   createLesson,
   deleteLesson,

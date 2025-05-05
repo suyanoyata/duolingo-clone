@@ -53,7 +53,7 @@ export const LessonComponent = ({
         variant="primary"
         className={cn(
           "w-20 h-20 rounded-full relative border-b-8",
-          "border-zinc-500 bg-zinc-400 hover:bg-zinc-400",
+          "border-zinc-500 bg-zinc-400 hover:bg-zinc-400"
         )}
         style={{
           left: `${position}px`,
@@ -75,16 +75,12 @@ export const LessonComponent = ({
           router.push("/lesson");
         }}
         disabled={
-          isUnitLocked ||
-          !isLessonAvailable ||
-          (isCurrentLesson && user && user.hearts <= 0)
+          isUnitLocked || !isLessonAvailable || (isCurrentLesson && user && user.hearts <= 0)
         }
         variant="primary"
         className={cn(
           "w-20 h-20 rounded-full relative border-b-[10px] hover:border-b-[8px]",
-          isUnitLocked ||
-            (!isLessonAvailable &&
-              "border-zinc-500 bg-zinc-400 hover:bg-zinc-400"),
+          isUnitLocked || (!isLessonAvailable && "border-zinc-500 bg-zinc-400 hover:bg-zinc-400")
         )}
         style={{
           left: `${position}px`,

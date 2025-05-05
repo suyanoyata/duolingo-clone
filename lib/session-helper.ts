@@ -5,7 +5,7 @@ import { jwtVerify, SignJWT } from "jose";
 import { User } from "@prisma/client";
 
 const generateSession = async (data: User) => {
-  const token = await new SignJWT({ id: data.id })
+  const token = await new SignJWT({ id: data.id, isAdmin: data.isAdmin })
     .setProtectedHeader({ alg: "HS256" })
     .sign(new TextEncoder().encode(process.env.JWT_SECRET as string));
 
@@ -27,10 +27,7 @@ const verifySession = async (): Promise<{
     if (!cookie?.value) {
       throw Error();
     }
-    const dbUser = await jwtVerify(
-      cookie.value,
-      new TextEncoder().encode(process.env.JWT_SECRET),
-    );
+    const dbUser = await jwtVerify(cookie.value, new TextEncoder().encode(process.env.JWT_SECRET));
 
     return {
       code: 200,

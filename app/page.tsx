@@ -33,9 +33,12 @@ export default function Home() {
   return (
     <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto">
       <section className="h-screen flex items-center justify-center flex-wrap">
-        <div className="w-[400px] h-[400px] bg-zinc-100 rounded-lg flex items-center justify-center">
-          <p className="text-zinc-300 text-sm font-bold">
-            todo: add some sort of avatar there
+        <div className="w-[400px] h-[400px] bg-zinc-100 rounded-lg overflow-hidden">
+          <p className="text-zinc-300 text-sm font-bold -rotate-45 w-[550px] h-[600px] -translate-x-16 -translate-y-24 select-none text-justify">
+            {Array.from({ length: 25 }).map(
+              () =>
+                "Привіт Hello 안녕하세요 Bonjour Witam Ahoj Γειά σου Hola こんにちは Ciao Xin chào مرحبًا Hei "
+            )}
           </p>
         </div>
         <div className="text-center flex flex-col items-center w-[480px]">

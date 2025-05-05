@@ -90,10 +90,7 @@ export const LoginForm = ({
             }}
           >
             <div className="absolute top-0 left-0 h-screen w-full bg-white flex items-center justify-center">
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="bg-white flex-1 max-w-[400px]"
-              >
+              <form onSubmit={handleSubmit(onSubmit)} className="bg-white flex-1 max-w-[400px]">
                 <X
                   className="absolute top-4 left-4 text-zinc-600 cursor-pointer"
                   onClick={() => {
@@ -114,9 +111,7 @@ export const LoginForm = ({
                         {...register(field.name as "email")}
                       />
                       {errors[field.name as "email"] && (
-                        <FieldError>
-                          {errors[field.name as "email"]!.message}
-                        </FieldError>
+                        <FieldError>{errors[field.name as "email"]!.message}</FieldError>
                       )}
                     </div>
                   ))}
@@ -132,9 +127,7 @@ export const LoginForm = ({
                       <LoadingCircle className="text-white" />
                     )}
                   </Button>
-                  {errors.root && (
-                    <FieldError>{errors.root.message}</FieldError>
-                  )}
+                  {errors.root && <FieldError>{errors.root.message}</FieldError>}
                 </div>
               </form>
             </div>

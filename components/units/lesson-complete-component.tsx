@@ -28,7 +28,7 @@ export const LessonComplete = ({
   const queryClient = useQueryClient();
 
   const lessonCompletedCallback = async () => {
-    if (currentChallengeIndex + 1 < challengeLength) return;
+    if (currentChallengeIndex < challengeLength) return;
 
     if (isPreviousChallengeCompleting) {
       await increaseHeart();

@@ -21,7 +21,9 @@ type UploadImageError = {
 
 class UploadService {
   public async createBucket(challengeId: number) {
-    return await supabase().storage.createBucket(`${challengeId}-lesson`);
+    return await supabase().storage.createBucket(`${challengeId}-lesson`, {
+      public: true,
+    });
   }
 
   public async upload(challengeId: number, file: File) {
